@@ -2,6 +2,12 @@
 
 This repository contains the code to reproduce all figures from the Iron Mind manuscript. The repository provides Python scripts to generate publication-quality figures from benchmark optimization data across six chemical reaction datasets.
 
+## Website for testing optimizers and engaging in human-driven optimization campaigns
+
+This work comes with a website for users to test out both the LLM and BO optimization strategies on the benchmark datasets.
+Additionally, we are excited to offer humans the opportunity to conduct optimization campaigns on the datasets.
+You can access the website [here](https://gomes.andrew.cmu.edu/iron-mind).
+
 ## Repository Structure
 
 - `figures/` - Python scripts for generating manuscript figures
