@@ -46,7 +46,7 @@ plotly_get_chrome
 
 ## Data Access
 
-The benchmark optimization data used to generate these figures is available on Hugging Face:
+The benchmark optimization data used to generate these figures is available on [Hugging Face](https://huggingface.co/datasets/gomesgroup/iron-mind-data):
 
 ```bash
 pip install huggingface-hub
