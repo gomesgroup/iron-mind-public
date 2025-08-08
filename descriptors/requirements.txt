@@ -1,0 +1,4 @@
+mordred
+rdkit
+scikit-learn
+notebook
