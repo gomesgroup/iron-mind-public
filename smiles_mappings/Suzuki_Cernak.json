@@ -1,0 +1,40 @@
+{
+    "halide": {
+        "tert-butyl (1R)-1-(2-acetamidopropan-2-yl)-5-chloro-6-methylspiro[1,2-dihydroindene-3,4'-piperidine]-1'-carboxylate": "CC(=O)NC(C)(C)[C@@H]1CC2(CCN(CC2)C(=O)OC(C)(C)C)c3cc(Cl)c(C)cc13",
+        "tert-butyl N-[(4S)-4-(3-chlorothiophen-2-yl)-1,4-dimethyl-6-oxo-5H-pyrimidin-2-yl]carbamate": "CN1C(=O)C[C@](C)(N/C/1=N/C(=O)OC(C)(C)C)c2sccc2Cl",
+        "ethyl 4-(6-bromo-13-chloro-4-azatricyclo[9.4.0.03,8]pentadeca-1(11),3(8),4,6,12,14-hexaen-2-ylidene)piperidine-1-carboxylate": "CCOC(=O)N1CCC(=C2c3ccc(Cl)cc3CCc4cc(Br)cnc24)CC1",
+        "2-bromo-5-phenylpyridine": "Brc1ccc(cn1)c2ccccc2",
+        "1-O-benzyl 2-O-methyl (2S,4R)-4-(4-bromo-1,3-dihydroisoindole-2-carbonyl)oxypyrrolidine-1,2-dicarboxylate": "COC(=O)[C@@H]1C[C@H](CN1C(=O)OCc2ccccc2)OC(=O)N3Cc4cccc(Br)c4C3",
+        "7-[(3-bromo-4-methoxyphenyl)methyl]-1-ethyl-8-[[(1R,2R)-2-hydroxycyclopentyl]amino]-3-(2-hydroxyethyl)purine-2,6-dione": "CCN1C(=O)N(CCO)c2nc(N[C@@H]3CCC[C@H]3O)n(Cc4ccc(OC)c(Br)c4)c2C1=O",
+        "tert-butyl N-[(4S)-4-(4-bromothiophen-2-yl)-1,4-dimethyl-6-oxo-5H-pyrimidin-2-yl]carbamate": "CN1C(=O)C[C@](C)(N/C/1=N/C(=O)OC(C)(C)C)c2cc(Br)cs2",
+        "5-bromo-N-[(4-fluorophenyl)methyl]-8-hydroxy-1,6-naphthyridine-7-carboxamide": "Oc1c(nc(Br)c2cccnc12)C(=O)NCc3ccc(F)cc3"
+    },
+    "boronate": {
+        "N,N-dimethyl-4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)aniline": "CN(C)c1ccc(cc1)B2OC(C)(C)C(C)(C)O2",
+        "3-methyl-4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenol": "Cc1cc(O)ccc1B2OC(C)(C)C(C)(C)O2",
+        "[4-(cyclopentylcarbamoyl)phenyl]boronic acid": "OB(O)c1ccc(cc1)C(=O)NC2CCCC2",
+        "benzyl N-[1-[3-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl]cyclopropyl]carbamate": "CC1(C)OB(OC1(C)C)c2cccc(c2)C3(CC3)NC(=O)OCc4ccccc4",
+        "2-[4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)phenyl]pyrazine": "CC1(C)OB(OC1(C)C)c2ccc(cc2)c3cnccn3",
+        "pyridin-3-ylboronic acid": "OB(O)c1cccnc1",
+        "2-pyrazol-1-yl-5-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)pyrimidine": "CC1(C)OB(OC1(C)C)c2cnc(nc2)n3cccn3",
+        "1-benzyl-4-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)pyrazole": "CC1(C)OB(OC1(C)C)c2cnn(Cc3ccccc3)c2",
+        "1-(benzenesulfonyl)-3-(4,4,5,5-tetramethyl-1,3,2-dioxaborolan-2-yl)pyrrolo[2,3-b]pyridine": "CC1(C)OB(OC1(C)C)c2cn(c3ncccc23)S(=O)(=O)c4ccccc4",
+        "2-(cyclohexen-1-yl)-4,4,5,5-tetramethyl-1,3,2-dioxaborolane": "CC1(C)OB(OC1(C)C)C2=CCCCC2"
+    },
+    "conditions": {
+        "Catalyst: tBuXphos G3 Base: P2-Et Solvent: DMSO Cosolvent: None": "CC(C)C1=CC(=C(C(=C1)C(C)C)C2=CC=CC=C2P(C(C)(C)C)C(C)(C)C)C(C)C.CN(C)P(N(C)C)(N(C)C)=NP(N(C)C)(N(C)C)=NCC.CS(=O)C",
+        "Catalyst: Aphos G3 Base: BTMG Solvent: DMSO Cosolvent: None": "CC(=O)OC(C(Cl)(Cl)Cl)P(=O)(OC1=CC=CC=C1)OC2=CC=CC=C2.CN(C)/C(N(C)C)=N\\C(C)(C)C.CS(=O)C",
+        "Catalyst: Aphos G3 Base: P2-Et Solvent: DMSO Cosolvent: None": "CC(=O)OC(C(Cl)(Cl)Cl)P(=O)(OC1=CC=CC=C1)OC2=CC=CC=C2.CN(C)P(N(C)C)(N(C)C)=NP(N(C)C)(N(C)C)=NCC.CS(=O)C",
+        "Catalyst: tBuXphos G3 Base: BTMG Solvent: DMSO Cosolvent: None": "CC(C)C1=CC(=C(C(=C1)C(C)C)C2=CC=CC=C2P(C(C)(C)C)C(C)(C)C)C(C)C.CN(C)/C(N(C)C)=N\\C(C)(C)C.CS(=O)C",
+
+        "Catalyst: Aphos G3 Base: BTMG Solvent: DMSO Cosolvent: t-AmOH (25%)": "CC(=O)OC(C(Cl)(Cl)Cl)P(=O)(OC1=CC=CC=C1)OC2=CC=CC=C2.CN(C)/C(N(C)C)=N\\C(C)(C)C.CS(=O)C.CCC(C)(C)O",
+        "Catalyst: tBu3P G2 Base: BTTP Solvent: DMSO Cosolvent: t-AmOH (25%)": "CC(C)(C)P(C(C)(C)C)C(C)(C)C.CC(C)(C)N=P(N1CCCC1)(N2CCCC2)N3CCCC3.CS(=O)C.CCC(C)(C)O",
+        "Catalyst: Aphos G3 Base: BTTP Solvent: DMSO Cosolvent: t-AmOH (25%)": "CC(=O)OC(C(Cl)(Cl)Cl)P(=O)(OC1=CC=CC=C1)OC2=CC=CC=C2.CC(C)(C)N=P(N1CCCC1)(N2CCCC2)N3CCCC3.OCS(=O)C.CCC(C)(C)",
+        "Catalyst: tBu3P G2 Base: BTMG Solvent: DMSO Cosolvent: t-AmOH (25%)": "CC(C)(C)P(C(C)(C)C)C(C)(C)C.CN(C)/C(N(C)C)=N\\C(C)(C)C.CS(=O)C.CCC(C)(C)O",
+
+        "Catalyst: Xphos G3 Base: K3PO4 Solvent: DMSO Cosolvent: H2O (25%)": "CC(C)C1=CC(=C(C(=C1)C(C)C)C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4)C(C)C.O=P(O[K])(O[K])O[K].CS(=O)C.O",
+        "Catalyst: Xphos G3 Base: BTMG Solvent: DMSO Cosolvent: H2O (25%)": "CC(C)C1=CC(=C(C(=C1)C(C)C)C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4)C(C)C.CN(C)/C(N(C)C)=N\\C(C)(C)C.CS(=O)C.O",
+        "Catalyst: RuPhos G3 Base: K3PO4 Solvent: DMSO Cosolvent: H2O (25%)": "CC(C)OC1=C(C(=CC=C1)OC(C)C)C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4.CS(=O)C.O=P(O[K])(O[K])O[K].O",
+        "Catalyst: RuPhos G3 Base: BTMG Solvent: DMSO Cosolvent: H2O (25%)": "CC(C)OC1=C(C(=CC=C1)OC(C)C)C2=CC=CC=C2P(C3CCCCC3)C4CCCCC4.CN(C)/C(N(C)C)=N\\C(C)(C)C.CS(=O)C.O"
+    }
+}

@@ -1,0 +1,26 @@
+{
+    "electrophile": {
+        "iodomethane": "CI",
+        "iodoethane": "CCI",
+        "1-iodopropane": "CCCI",
+        "1-iodobutane": "CCCCI",
+        "2-(bromomethyl)-1-methylimidazole": "Cn1ccnc1CBr",
+        "2-(bromomethyl)pyridine": "BrCc1ccccn1",
+        "4-(bromomethyl)pyridine": "BrCc1ccncc1",
+        "2-(bromomethyl)-6-methylpyridine": "Cc1cccc(CBr)n1",
+        "1-(bromomethyl)-2-phenylbenzene": "BrCc1ccccc1c2ccccc2",
+        "1-(bromomethyl)-4-phenylbenzene": "BrCc1ccc(cc1)c2ccccc2",
+        "bromomethylbenzene": "BrCc1ccccc1",
+        "1-bromo-3-methylbut-2-ene": "CC(=CCBr)C"
+    },
+    "core": {
+        "tert-butyl 4-(4-(5-(4-chlorophenyl)furan-2-carboxamido)phenyl)piperazine-1-carboxylate": "CC(C)(C)OC(=O)N1CCN(CC1)c2ccc(NC(=O)c3oc(cc3)c4ccc(Cl)cc4)cc2",
+        "tert-butyl 4-(4-(5-(4-cyanophenyl)furan-2-carboxamido)phenyl)piperazine-1-carboxylate": "CC(C)(C)OC(=O)N1CCN(CC1)c2ccc(NC(=O)c3oc(cc3)c4ccc(cc4)C#N)cc2"
+    },
+    "base": {
+        "P2-Et": "CN(C)P(N(C)C)(N(C)C)=NP(N(C)C)(N(C)C)=NCC",
+        "BTTP": "CC(C)(C)N=P(N1CCCC1)(N2CCCC2)N3CCCC3",
+        "NaOtBu": "CC(C)(O[Na])C",
+        "LiHMDS": "[Li]N([Si](C)(C)C)[Si](C)(C)C"
+    }
+}

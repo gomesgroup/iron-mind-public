@@ -1,0 +1,57 @@
+{
+    "base": {
+        "MTBD": "CN1CCCN2CCCN=C12",
+        "P2Et": "CN(C)P(N(C)C)(N(C)C)=NP(N(C)C)(N(C)C)=NCC",
+        "BTMG": "CN(C)/C(N(C)C)=N\\C(C)(C)C"
+    },
+    "ligand": {
+        "XPhos": "CC(C)C1=CC(C(C)C)=CC(C(C)C)=C1C2=C(P(C3CCCCC3)C4CCCCC4)C=CC=C2",
+        "AdBrettPhos": "CC(C1=C(C2=C(OC)C=CC(OC)=C2P(C34CC5CC(C4)CC(C5)C3)C67CC8CC(C7)CC(C8)C6)C(C(C)C)=CC(C(C)C)=C1)C",
+        "t-BuBrettPhos": "CC(C)C1=CC(C(C)C)=CC(C(C)C)=C1C2=C(P(C(C)(C)C)C(C)(C)C)C(OC)=CC=C2OC",
+        "t-BuXPhos": "CC(C)C(C=C(C(C)C)C=C1C(C)C)=C1C2=CC=CC=C2P(C(C)(C)C)C(C)(C)C"
+    },
+    "aryl_halide": {
+        "1-iodo-4-(trifluoromethyl)benzene": "FC(F)(F)c1ccc(I)cc1",
+        "1-chloro-4-ethylbenzene": "CCc1ccc(Cl)cc1",
+        "1-chloro-4-(trifluoromethyl)benzene": "FC(F)(F)c1ccc(Cl)cc1",
+        "2-iodopyridine": "Ic1ccccn1",
+        "None": "Ic1ccccn1",
+        "1-chloro-4-methoxybenzene": "COc1ccc(Cl)cc1",
+        "1-bromo-4-(trifluoromethyl)benzene": "FC(F)(F)c1ccc(Br)cc1",
+        "2-bromopyridine": "Brc1ccccn1",
+        "3-chloropyridine": "Clc1cccnc1",
+        "2-chloropyridine": "Clc1ccccn1",
+        "3-iodopyridine": "Ic1cccnc1",
+        "1-ethyl-4-iodobenzene": "CCc1ccc(I)cc1",
+        "1-bromo-4-ethylbenzene": "CCc1ccc(Br)cc1",
+        "1-bromo-4-methoxybenzene": "COc1ccc(Br)cc1",
+        "3-bromopyridine": "Brc1cccnc1",
+        "1-iodo-4-methoxybenzene": "COc1ccc(I)cc1"
+    },
+    "additive": {
+        "5-methyl-3-(1H-pyrrol-1-yl)isoxazole": "Cc1onc(c1)n2cccc2",
+        "ethyl-3-methoxyisoxazole-5-carboxylate": "CCOC(=O)c1onc(OC)c1",
+        "methyl-5-(thiophen-2-yl)isoxazole-3-carboxylate": "COC(=O)c1cc(on1)c2sccc2",
+        "5-(2,6-difluorophenyl)isoxazole": "Fc1cccc(F)c1c2oncc2",
+        "None": "Fc1cccc(F)c1c2oncc2",
+        "N,N-dibenzylisoxazol-5-amine": "C(N(Cc1ccccc1)c2oncc2)c3ccccc3",
+        "5-phenylisoxazole": "o1nccc1c2ccccc2",
+        "3-methylisoxazole": "Cc1ccon1",
+        "4-phenylisoxazole": "o1cc(cn1)c2ccccc2",
+        "3,5-dimethylisoxazole": "Cc1onc(C)c1",
+        "benzo[c]isoxazole": "o1cc2ccccc2n1",
+        "ethyl-5-methylisoxazole-4-carboxylate": "CCOC(=O)c1cnoc1C",
+        "ethyl-isoxazole-4-carboxylate": "CCOC(=O)c1conc1",
+        "ethyl-5-methylisoxazole-3-carboxylate": "CCOC(=O)c1cc(C)on1",
+        "benzo[d]isoxazole": "o1ncc2ccccc12",
+        "ethyl-isoxazole-3-carboxylate": "CCOC(=O)c1ccon1",
+        "5-methylisoxazole": "Cc1oncc1",
+        "N,N-dibenzylisoxazol-3-amine": "C(N(Cc1ccccc1)c2ccon2)c3ccccc3",
+        "5-Phenyl-1,2,4-oxadiazole": "c1ccc(-c2ncno2)cc1",
+        "3-methyl-5-phenylisoxazole": "Cc1cc(on1)c2ccccc2",
+        "3-phenylisoxazole": "o1ccc(n1)c2ccccc2",
+        "ethyl-3-methylisoxazole-5-carboxylate": "CCOC(=O)c1onc(C)c1",
+        "methyl-5-(furan-2-yl)isoxazole-3-carboxylate": "COC(=O)c1cc(on1)c2occc2",
+        "methyl-isoxazole-5-carboxylate": "COC(=O)c1oncc1"
+    }
+}

@@ -1,0 +1,24 @@
+{
+    "substrate": {
+        "2-bromo-4-formylbenzonitrile": "Brc1cc(C=O)ccc1C#N",
+        "N-(4-formylphenyl)acetamide": "CC(=O)Nc1ccc(C=O)cc1",
+        "3,4-dimethylbenzaldehyde": "Cc1ccc(C=O)cc1C",
+        "3-phenylpropanal": "O=CCCc1ccccc1",
+        "(E)-3-phenylprop-2-enal": "O=C\\C=C\\c1ccccc1",
+        "benzyl 4-formylpiperidine-1-carboxylate": "O=CC1CCN(CC1)C(=O)OCc2ccccc2",
+        "1,3-benzothiazole-2-carbaldehyde": "O=Cc1nc2ccccc2s1",
+        "3,7-dimethyloct-6-enal": "CC(CCC=C(C)C)CC=O",
+        "benzyl 4-oxopiperidine-1-carboxylate": "O=C(OCc1ccccc1)N2CCC(=O)CC2",
+        "1-(3,4-difluorophenyl)piperidin-4-one": "Fc1ccc(cc1F)N2CCC(=O)CC2",
+        "1-[3,5-bis(trifluoromethyl)phenyl]ethanone": "CC(=O)c1cc(cc(c1)C(F)(F)F)C(F)(F)F",
+        "1-(3,5-dimethylphenyl)ethanone": "CC(=O)c1cc(C)cc(C)c1",
+        "(E)-4-phenylbut-3-en-2-one": "CC(=O)\\C=C\\c1ccccc1",
+        "3-pyrazol-1-ylcyclopentan-1-one": "O=C1CCC(C1)n2cccn2",
+        "cyclopentanone": "O=C1CCCC1",
+        "2-(3-oxocyclopentyl)acetonitrile": "O=C1CCC(CC#N)C1"
+    },
+    "solvent": {
+        "DMA": "CC(=O)N(C)C",
+        "NMP": "CN1CCCC1=O"
+    }
+}
