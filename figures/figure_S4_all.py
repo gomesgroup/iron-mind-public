@@ -242,27 +242,26 @@ def get_tracks(path, dataset_name, bo=False, n_tracks=None, track_size=None, agg
     else:
         return tracks
 
-def get_top_obs_data(path_dict):
-    # Extract the top observation for each track for each model across all datasets
-    top_obs_data = {}
+def get_convergence_data(path_dict):
+    convergence_data = {}
     for dataset_name, optimization_data in path_dict.items():
-        top_obs_data[dataset_name.lower()] = {} 
+        convergence_data[dataset_name.lower()] = {}
         for key, tracks in optimization_data.items():
-            top_obs_data[dataset_name.lower()][key] = {'top_obs': [], 'median': None, 'q1': None, 'q3': None}
-            # Get the max in each row
+            convergence_data[dataset_name.lower()][key] = {'convergence_indices': [], 'median': None, 'q1': None, 'q3': None}
+            # Get the index of the max in each row
             try:
-                top_obs = [float(np.max(track)) for track in tracks]
-                top_obs_data[dataset_name.lower()][key]['top_obs'] = top_obs
-            
-                median = float(np.median(top_obs))
-                q1 = float(np.percentile(top_obs, 25))
-                q3 = float(np.percentile(top_obs, 75))
-                top_obs_data[dataset_name.lower()][key]['median'] = median
-                top_obs_data[dataset_name.lower()][key]['q1'] = q1
-                top_obs_data[dataset_name.lower()][key]['q3'] = q3
+                top_obs_idx = [np.argmax(track) for track in tracks]
+                convergence_data[dataset_name.lower()][key]['convergence_indices'] = top_obs_idx
+                
+                median = float(np.median(top_obs_idx))
+                q1 = float(np.percentile(top_obs_idx, 25))
+                q3 = float(np.percentile(top_obs_idx, 75))
+                convergence_data[dataset_name.lower()][key]['median'] = median
+                convergence_data[dataset_name.lower()][key]['q1'] = q1
+                convergence_data[dataset_name.lower()][key]['q3'] = q3
             except Exception as e:
-                print(f'Error getting top obs for {key} in {dataset_name}: {e}')
-    return top_obs_data
+                print(f'Error getting convergence data for {key} in {dataset_name}: {e}')
+    return convergence_data
 
 # Function to plot boxplots for a provider
 def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datasets=[]):
@@ -270,7 +269,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
         ax.axis('off')
         return
     
-    top_obs_data_refined = {k: v for k, v in top_obs_data.items() if k not in remove_datasets}
+    convergence_data_refined = {k: v for k, v in convergence_data.items() if k not in remove_datasets}
     # Add horizontal line at y=0 in the background
     ax.axhline(y=0, color='black', linestyle='-', linewidth=1.5, zorder=0)
     
@@ -280,7 +279,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
     for method_name in provider_method_list:
         position = method_positions[method_name]
         offset = 0
-        for dataset_name, dataset_data in top_obs_data_refined.items():
+        for dataset_name, dataset_data in convergence_data_refined.items():
             for key, method_data in dataset_data.items():
                 current_method = key.split('/')[-1]
                 current_method = current_method.replace('-1-20-20', '')
@@ -293,7 +292,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                 
                 if current_method == method_name:
                     boxplot = ax.boxplot(
-                        method_data['top_obs'],
+                        method_data['convergence_indices'],
                         positions=[position + offset],
                         widths=0.2,
                         patch_artist=True,
@@ -302,8 +301,8 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                     )
 
                     # Print the IQR for the method and dataset
-                    q1 = np.percentile(method_data['top_obs'], 25)
-                    q3 = np.percentile(method_data['top_obs'], 75)
+                    q1 = np.percentile(method_data['convergence_indices'], 25)
+                    q3 = np.percentile(method_data['convergence_indices'], 75)
                     IQR = q3 - q1
                     # print(f"{method_name} - {dataset_name}: {IQR:.2f}")
                     
@@ -336,7 +335,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
         base_position = method_positions[method_name]
         # Count how many datasets have data for this method
         n_datasets = 0
-        for dataset_name, dataset_data in top_obs_data_refined.items():
+        for dataset_name, dataset_data in convergence_data_refined.items():
             for key in dataset_data.keys():
                 current_method = key.split('/')[-1]
                 current_method = current_method.replace('-1-20-20', '')
@@ -394,7 +393,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
         print(f"No methods found for {provider_name}")
         return
     
-    top_obs_data_refined = {k: v for k, v in top_obs_data.items() if k not in remove_datasets}
+    convergence_data_refined = {k: v for k, v in convergence_data.items() if k not in remove_datasets}
     
     # Fixed figure sizing for consistent 2x2 layout
     fig_width = 15
@@ -414,7 +413,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
         position = method_positions[method_name]
         offset = 0
         
-        for dataset_name, dataset_data in top_obs_data_refined.items():
+        for dataset_name, dataset_data in convergence_data_refined.items():
             if dataset_name not in provider_data:
                 provider_data[dataset_name] = {}
             for key, method_data in dataset_data.items():
@@ -428,21 +427,21 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
                 current_method = current_method.replace('-preview-06-17', '')
                 
                 if current_method == method_name:
-                    provider_data[dataset_name][method_name] = method_data['top_obs']
+                    provider_data[dataset_name][method_name] = method_data['convergence_indices']
                     boxplot = ax.boxplot(
-                        method_data['top_obs'],
+                        method_data['convergence_indices'],
                         positions=[position + offset],
                         widths=0.3,
                         patch_artist=True,
                         showfliers=True,
                         zorder=3
                     )
-                    IQR = np.percentile(method_data['top_obs'], 75) - np.percentile(method_data['top_obs'], 25)
+                    IQR = np.percentile(method_data['convergence_indices'], 75) - np.percentile(method_data['convergence_indices'], 25)
                     
                     # Customize boxplot appearance
                     # Set median properties first so it appears behind the box
                     for median in boxplot['medians']:
-                        if IQR == 0 and np.median(method_data['top_obs']) == 100:
+                        if IQR == 0 and np.median(method_data['convergence_indices']) == 100:
                             median.set(color='k', linewidth=4, zorder=2)
                             # Place a black box behind the asterisk
                             from matplotlib.patches import Rectangle
@@ -482,7 +481,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
         base_position = method_positions[method_name]
         # Count how many datasets have data for this method
         n_datasets = 0
-        for dataset_name, dataset_data in top_obs_data_refined.items():
+        for dataset_name, dataset_data in convergence_data_refined.items():
             for key in dataset_data.keys():
                 current_method = key.split('/')[-1]
                 current_method = current_method.replace('-1-20-20', '')
@@ -520,7 +519,9 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
     ax.set_xticklabels(xticklabels, rotation=0, ha='center', fontsize=16)
     ax.grid(axis='y', linestyle='--', alpha=0.7, zorder=0)
     ax.grid(False, axis='x')
-    ax.set_ylim(0, 105)
+    ax.set_ylim(0, 21)
+    # increment by 2
+    ax.set_yticks(np.arange(0, 21, 2))
     ax.tick_params(axis='y', labelsize=20)
     ax.tick_params(axis='x', labelsize=16)
     
@@ -537,6 +538,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
     return fig, ax, provider_data
 
 if __name__ == "__main__":
+    # user input for the run path
     # Get run path from command line argument or user input
     if len(sys.argv) > 1:
         run_path = sys.argv[1]
@@ -586,13 +588,13 @@ if __name__ == "__main__":
     for dataset_name, paths in path_dict.items():
         print(f"{dataset_name}: {len(paths)}")
 
-    top_obs_data = get_top_obs_data(path_dict)
+    convergence_data = get_convergence_data(path_dict)
 
     # Sort by dataset_name based on how it appears in dataset_to_color
     sorted_dataset_names = sorted(dataset_to_color.keys(), key=lambda x: list(dataset_to_color.values()).index(dataset_to_color[x]), reverse=True)
 
     # Sort top_5_dict by the sorted dataset_names
-    top_obs_data = {k: top_obs_data[k] for k in sorted_dataset_names}
+    convergence_data = {k: convergence_data[k] for k in sorted_dataset_names}
     
     # Group methods by provider for boxplots
     method_data = {}
@@ -601,7 +603,7 @@ if __name__ == "__main__":
     remove_datasets = []
 
     # First collect all method names and their dataset coverage
-    for dataset_name, dataset_data in top_obs_data.items():
+    for dataset_name, dataset_data in convergence_data.items():
         for key in dataset_data.keys():
             method_name = key.split('/')[-1]
             method_name = method_name.replace('-1-20-20', '')
@@ -640,7 +642,7 @@ if __name__ == "__main__":
         all_provider_data[provider_name] = provider_data
         # Save the figure to ./pngs/figure_5_{provider_name}.png
         os.makedirs('./pngs', exist_ok=True)
-        plt.savefig(f'./pngs/figure_5_{provider_name}.png', dpi=300, bbox_inches='tight')
+        plt.savefig(f'./pngs/figure_S4_{provider_name}.png', dpi=300, bbox_inches='tight')
         
     print(f"\nCreated {len(provider_methods)} individual provider plots.")
 
@@ -649,4 +651,7 @@ if __name__ == "__main__":
     for provider, methods in provider_methods.items():
         print(f"  {provider}: {len(methods)} methods - {', '.join(methods)}")
 
-    
+    print(f'Figure S4 Anthropic saved to ./pngs/figure_S4_Anthropic.png')
+    print(f'Figure S4 Google saved to ./pngs/figure_S4_Google.png')
+    print(f'Figure S4 OpenAI saved to ./pngs/figure_S4_OpenAI.png')
+    print(f'Figure S4 Atlas saved to ./pngs/figure_S4_Atlas.png')    

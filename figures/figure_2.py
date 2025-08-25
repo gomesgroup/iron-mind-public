@@ -32,11 +32,11 @@ def gather_data():
             obj_data = []
             
             for name, group in param_groups:
-                desired_yield = group['desired_yield'].iloc[0]  # Take first value from group
-                undesired_yield = group['undesired_yield'].iloc[0]
-                mean_yield_diff = (group['desired_yield'] - group['undesired_yield']).mean()
-                yield_difference = desired_yield - undesired_yield
-                obj_data.append(yield_difference)
+                # Average desired and undesired yields within each parameter group (consistent with optimization analysis)
+                avg_desired_yield = group['desired_yield'].mean()
+                avg_undesired_yield = group['undesired_yield'].mean()
+                net_selectivity = avg_desired_yield - avg_undesired_yield
+                obj_data.append(net_selectivity)
             
             # Create dataset label
             dataset_label = dataset_name.replace('_', '\n').upper() + '\n(yield_difference)'
@@ -62,26 +62,21 @@ if __name__ == "__main__":
     
     box_plot_data = gather_data()
 
-    medians = {k: np.median(v) for k, v in box_plot_data.items()}
-    sorted_data = dict(sorted(box_plot_data.items(), key=lambda x: medians[x[0]]))
-
-    # Create a color palette
-    boxplot_colors = sns.color_palette("magma", len(sorted_data))
-
-    # Create a dictionary mapping dataset names to their colors
-    dataset_to_color = {}
-    for (dataset_name, _), color in zip(sorted_data.items(), boxplot_colors):
-        # Convert RGB tuple to hex color code
-        hex_color = '#%02x%02x%02x' % tuple(int(c * 255) for c in color)
-        dataset_to_color['_'.join(dataset_name.split('\n')[:-1]).lower()] = hex_color
+    # Use consistent color scheme from other figures
+    dataset_to_color = {
+        'reductive_amination': '#221150',
+        'buchwald_hartwig': '#5e177f',
+        'chan_lam_full': '#972c7f',
+        'suzuki_cernak': '#d3426d',
+        'suzuki_doyle': '#f8755c',
+        'alkylation_deprotection': '#febb80'
+    }
 
     # Create figure with 3 rows, 2 columns instead of 2 rows, 3 columns
     fig, axes = plt.subplots(2, 3, figsize=(16, 10))
 
     # Create the combined boxplot in the first position
     ax_combined = axes[0, 0]
-
-    datasets = list(sorted_data.items())
 
     # Map datasets to specific positions in the new 3x2 layout
     positions = [
@@ -98,18 +93,21 @@ if __name__ == "__main__":
         row, col, dataset_id = pos
         
         # Find the dataset that matches this ID
-        dataset_index = None
-        for j, (dataset_name, _) in enumerate(datasets):
-            print(dataset_id.lower(), dataset_name.replace('\n', '_').lower())
-            if dataset_id.lower() in dataset_name.replace('\n', '_').lower():
-                dataset_index = j
+        dataset_name = None
+        values = None
+        for box_dataset_name, box_values in box_plot_data.items():
+            print(dataset_id.lower(), box_dataset_name.replace('\n', '_').lower())
+            if dataset_id.lower() in box_dataset_name.replace('\n', '_').lower():
+                dataset_name = box_dataset_name
+                values = box_values
                 break
         
-        if dataset_index is None:
+        if dataset_name is None or values is None:
             continue  # Skip if not found
         
-        dataset_name, values = datasets[dataset_index]
-        color = boxplot_colors[dataset_index]
+        # Get color from consistent color scheme
+        dataset_key = '_'.join(dataset_name.split('\n')[:-1]).lower()
+        color = dataset_to_color.get(dataset_key, '#1f77b4')  # Default blue if not found
         
         # Create histogram
         ax_hist = axes[row, col]
@@ -125,6 +123,11 @@ if __name__ == "__main__":
             align='edge',
             alpha=0.8
         )
+        
+        # Set x-axis range to show 100 tick
+        x_min, x_max = min(values), max(values)
+        x_range = x_max - x_min
+        ax_hist.set_xlim(x_min - 0.05 * x_range, max(x_max + 0.05 * x_range, 100))
         
         # Add median line vertically
         median_val = round(np.median(values), 1)
@@ -150,3 +153,5 @@ if __name__ == "__main__":
     os.makedirs('./pngs', exist_ok=True)
     plt.savefig('./pngs/figure_2.png', dpi=300, bbox_inches='tight')
     plt.close()
+
+    print(f'Figure 2 saved to ./pngs/figure_2.png')

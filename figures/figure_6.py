@@ -411,3 +411,8 @@ if __name__ == "__main__":
             d1 =list(provider_data.keys())[0]
             available_methods = len(provider_data[d1])
             print(f"  {provider}: {available_methods} methods with duplicate data")
+
+    print(f'Figure 6 Anthropic saved to ./pngs/figure_6_Anthropic.png')
+    print(f'Figure 6 Google saved to ./pngs/figure_6_Google.png')
+    print(f'Figure 6 OpenAI saved to ./pngs/figure_6_OpenAI.png')
+    print(f'Figure 6 Atlas saved to ./pngs/figure_6_Atlas.png')

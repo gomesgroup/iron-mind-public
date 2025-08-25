@@ -4,6 +4,7 @@ import numpy as np
 import sys
 
 import matplotlib.pyplot as plt
+from scipy.stats import mannwhitneyu
 
 from olympus.datasets.dataset import Dataset
 
@@ -65,6 +66,9 @@ model_to_provider = {
         'atlas-ucb-des',
         'atlas-pi',
         'atlas-pi-des',
+    ],
+    "Random": [
+        'random',
     ]
 }
 
@@ -77,6 +81,208 @@ dataset_to_color = {
     'alkylation_deprotection': '#febb80'
 }
 dataset_order = list(dataset_to_color.keys())
+
+def cliffs_delta(x, y):
+    """Calculate Cliff's delta effect size"""
+    n1, n2 = len(x), len(y)
+    if n1 == 0 or n2 == 0:
+        return 0
+    delta = sum(xi > yi for xi in x for yi in y) - sum(xi < yi for xi in x for yi in y)
+    return delta / (n1 * n2)
+
+def perform_statistical_analysis(group1_data, group2_data, group1_name="Group1", group2_name="Group2"):
+    """Perform Wilcoxon rank-sum test and calculate Cliff's delta"""
+    if len(group1_data) == 0 or len(group2_data) == 0:
+        return None, None, f"Insufficient data"
+    
+    # Wilcoxon rank-sum test (Mann-Whitney U)
+    try:
+        statistic, p_value = mannwhitneyu(group1_data, group2_data, alternative='two-sided')
+    except ValueError:
+        return None, None, "Test failed"
+    
+    # Cliff's delta effect size
+    effect_size = cliffs_delta(group1_data, group2_data)
+    
+    # Interpret effect size
+    if abs(effect_size) < 0.147:
+        effect_interpretation = "negligible"
+    elif abs(effect_size) < 0.33:
+        effect_interpretation = "small"
+    elif abs(effect_size) < 0.474:
+        effect_interpretation = "medium"
+    else:
+        effect_interpretation = "large"
+    
+    # Significance level
+    if p_value < 0.001:
+        sig_symbol = "***"
+    elif p_value < 0.01:
+        sig_symbol = "**"
+    elif p_value < 0.05:
+        sig_symbol = "*"
+    else:
+        sig_symbol = "ns"
+    
+    result_text = f"{sig_symbol}\nδ={effect_size:.3f}"
+    
+    return p_value, effect_size, result_text
+
+def get_provider_data(top_obs_data, dataset_name, specific_provider=None):
+    """Extract data by provider groups"""
+    llm_data = []
+    bo_data = []
+    random_data = []
+    
+    if dataset_name not in top_obs_data:
+        return llm_data, bo_data, random_data
+    
+    for method_key, method_info in top_obs_data[dataset_name].items():
+        method_name = method_key.split('/')[-1]
+        method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
+        method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
+        method_name = method_name.replace('-preview-06-17', '')
+        
+        # Classify by provider
+        if specific_provider and specific_provider in ['Anthropic', 'Google', 'OpenAI']:
+            # Only include data from the specific LLM provider
+            is_llm = method_name in model_to_provider.get(specific_provider, [])
+        else:
+            # Include all LLM providers
+            is_llm = any(method_name in provider_methods for provider, provider_methods in model_to_provider.items() 
+                        if provider in ['Anthropic', 'Google', 'OpenAI'])
+        
+        is_bo = method_name in model_to_provider['Atlas']
+        is_random = method_name == 'random'
+        
+        if is_llm:
+            llm_data.extend(method_info['top_obs'])
+        elif is_bo:
+            bo_data.extend(method_info['top_obs'])
+        elif is_random:
+            random_data.extend(method_info['top_obs'])
+    
+    return llm_data, bo_data, random_data
+
+def find_best_llm_vs_best_bo_per_dataset(top_obs_data):
+    """Find best LLM method vs best BO method for each dataset"""
+    comparisons = {}
+    
+    for dataset_name, dataset_data in top_obs_data.items():
+        llm_methods = {}
+        bo_methods = {}
+        
+        # Separate LLM and BO methods
+        for method_key, method_info in dataset_data.items():
+            method_name = method_key.split('/')[-1]
+            method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
+            method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
+            method_name = method_name.replace('-preview-06-17', '')
+            
+            median_perf = np.median(method_info['top_obs'])
+            method_data = {
+                'median': median_perf,
+                'data': method_info['top_obs'],
+                'full_key': method_key
+            }
+            
+            # Classify as LLM or BO
+            is_llm = any(method_name in provider_methods for provider, provider_methods in model_to_provider.items() 
+                        if provider in ['Anthropic', 'Google', 'OpenAI'])
+            is_bo = method_name in model_to_provider['Atlas']
+            
+            if is_llm:
+                llm_methods[method_name] = method_data
+            elif is_bo:
+                bo_methods[method_name] = method_data
+        
+        # Find best LLM and best BO methods
+        if llm_methods and bo_methods:
+            best_llm = max(llm_methods.keys(), key=lambda x: llm_methods[x]['median'])
+            best_bo = max(bo_methods.keys(), key=lambda x: bo_methods[x]['median'])
+            
+            # Compare best LLM vs best BO
+            p_val, effect_size, result_text = perform_statistical_analysis(
+                llm_methods[best_llm]['data'], 
+                bo_methods[best_bo]['data'], 
+                best_llm, best_bo
+            )
+            
+            comparisons[dataset_name] = {
+                'best_llm': best_llm,
+                'best_bo': best_bo,
+                'llm_median': llm_methods[best_llm]['median'],
+                'bo_median': bo_methods[best_bo]['median'],
+                'p_value': p_val,
+                'effect_size': effect_size,
+                'result_text': result_text,
+                'llm_data': llm_methods[best_llm]['data'],
+                'bo_data': bo_methods[best_bo]['data']
+            }
+    
+    return comparisons
+
+def find_best_method_per_dataset(top_obs_data):
+    """Find the best performing method for each dataset with statistical analysis"""
+    best_methods = {}
+    
+    for dataset_name, dataset_data in top_obs_data.items():
+        method_performances = {}
+        
+        # Calculate median performance for each method
+        for method_key, method_info in dataset_data.items():
+            method_name = method_key.split('/')[-1]
+            method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
+            method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
+            method_name = method_name.replace('-preview-06-17', '')
+            
+            median_perf = np.median(method_info['top_obs'])
+            method_performances[method_name] = {
+                'median': median_perf,
+                'data': method_info['top_obs'],
+                'full_key': method_key
+            }
+        
+        # Find the best method (highest median)
+        best_method = max(method_performances.keys(), key=lambda x: method_performances[x]['median'])
+        best_data = method_performances[best_method]['data']
+        
+        # Compare best method against all others
+        comparisons = []
+        for other_method, other_info in method_performances.items():
+            if other_method != best_method:
+                p_val, effect_size, result_text = perform_statistical_analysis(
+                    best_data, other_info['data'], best_method, other_method
+                )
+                if p_val is not None:
+                    comparisons.append({
+                        'method': other_method,
+                        'p_value': p_val,
+                        'effect_size': effect_size,
+                        'median': other_info['median']
+                    })
+        
+        # Find the strongest comparison (largest effect size where best method wins)
+        strongest_comparison = None
+        if comparisons:
+            # Sort by effect size (positive means best method is better)
+            significant_comparisons = [c for c in comparisons if c['p_value'] < 0.05 and c['effect_size'] > 0]
+            if significant_comparisons:
+                strongest_comparison = max(significant_comparisons, key=lambda x: x['effect_size'])
+            else:
+                # If no significant positive comparisons, just take the one with largest positive effect
+                positive_comparisons = [c for c in comparisons if c['effect_size'] > 0]
+                if positive_comparisons:
+                    strongest_comparison = max(positive_comparisons, key=lambda x: x['effect_size'])
+        
+        best_methods[dataset_name] = {
+            'method': best_method,
+            'median': method_performances[best_method]['median'],
+            'data': best_data,
+            'strongest_comparison': strongest_comparison
+        }
+    
+    return best_methods
 
 def get_objective_value(obs_or_group, dataset_config, aggregation='first'):
     """
@@ -242,26 +448,27 @@ def get_tracks(path, dataset_name, bo=False, n_tracks=None, track_size=None, agg
     else:
         return tracks
 
-def get_convergence_data(path_dict):
-    convergence_data = {}
+def get_top_obs_data(path_dict):
+    # Extract the top observation for each track for each model across all datasets
+    top_obs_data = {}
     for dataset_name, optimization_data in path_dict.items():
-        convergence_data[dataset_name.lower()] = {}
+        top_obs_data[dataset_name.lower()] = {} 
         for key, tracks in optimization_data.items():
-            convergence_data[dataset_name.lower()][key] = {'convergence_indices': [], 'median': None, 'q1': None, 'q3': None}
-            # Get the index of the max in each row
+            top_obs_data[dataset_name.lower()][key] = {'top_obs': [], 'median': None, 'q1': None, 'q3': None}
+            # Get the max in each row
             try:
-                top_obs_idx = [np.argmax(track) for track in tracks]
-                convergence_data[dataset_name.lower()][key]['convergence_indices'] = top_obs_idx
-                
-                median = float(np.median(top_obs_idx))
-                q1 = float(np.percentile(top_obs_idx, 25))
-                q3 = float(np.percentile(top_obs_idx, 75))
-                convergence_data[dataset_name.lower()][key]['median'] = median
-                convergence_data[dataset_name.lower()][key]['q1'] = q1
-                convergence_data[dataset_name.lower()][key]['q3'] = q3
+                top_obs = [float(np.max(track)) for track in tracks]
+                top_obs_data[dataset_name.lower()][key]['top_obs'] = top_obs
+            
+                median = float(np.median(top_obs))
+                q1 = float(np.percentile(top_obs, 25))
+                q3 = float(np.percentile(top_obs, 75))
+                top_obs_data[dataset_name.lower()][key]['median'] = median
+                top_obs_data[dataset_name.lower()][key]['q1'] = q1
+                top_obs_data[dataset_name.lower()][key]['q3'] = q3
             except Exception as e:
-                print(f'Error getting convergence data for {key} in {dataset_name}: {e}')
-    return convergence_data
+                print(f'Error getting top obs for {key} in {dataset_name}: {e}')
+    return top_obs_data
 
 # Function to plot boxplots for a provider
 def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datasets=[]):
@@ -269,7 +476,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
         ax.axis('off')
         return
     
-    convergence_data_refined = {k: v for k, v in convergence_data.items() if k not in remove_datasets}
+    top_obs_data_refined = {k: v for k, v in top_obs_data.items() if k not in remove_datasets}
     # Add horizontal line at y=0 in the background
     ax.axhline(y=0, color='black', linestyle='-', linewidth=1.5, zorder=0)
     
@@ -279,7 +486,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
     for method_name in provider_method_list:
         position = method_positions[method_name]
         offset = 0
-        for dataset_name, dataset_data in convergence_data_refined.items():
+        for dataset_name, dataset_data in top_obs_data_refined.items():
             for key, method_data in dataset_data.items():
                 current_method = key.split('/')[-1]
                 current_method = current_method.replace('-1-20-20', '')
@@ -292,7 +499,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                 
                 if current_method == method_name:
                     boxplot = ax.boxplot(
-                        method_data['convergence_indices'],
+                        method_data['top_obs'],
                         positions=[position + offset],
                         widths=0.2,
                         patch_artist=True,
@@ -301,8 +508,8 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                     )
 
                     # Print the IQR for the method and dataset
-                    q1 = np.percentile(method_data['convergence_indices'], 25)
-                    q3 = np.percentile(method_data['convergence_indices'], 75)
+                    q1 = np.percentile(method_data['top_obs'], 25)
+                    q3 = np.percentile(method_data['top_obs'], 75)
                     IQR = q3 - q1
                     # print(f"{method_name} - {dataset_name}: {IQR:.2f}")
                     
@@ -335,7 +542,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
         base_position = method_positions[method_name]
         # Count how many datasets have data for this method
         n_datasets = 0
-        for dataset_name, dataset_data in convergence_data_refined.items():
+        for dataset_name, dataset_data in top_obs_data_refined.items():
             for key in dataset_data.keys():
                 current_method = key.split('/')[-1]
                 current_method = current_method.replace('-1-20-20', '')
@@ -388,12 +595,41 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
     ax.spines['top'].set_visible(False)
 
 def create_individual_provider_plot(provider_name, provider_method_list, remove_datasets=[]):
-    """Create a single plot for one provider"""
+    """Create a single plot for one provider with statistical analysis"""
     if not provider_method_list:
         print(f"No methods found for {provider_name}")
         return
     
-    convergence_data_refined = {k: v for k, v in convergence_data.items() if k not in remove_datasets}
+    top_obs_data_refined = {k: v for k, v in top_obs_data.items() if k not in remove_datasets}
+    
+    # Perform statistical analysis for each dataset
+    statistical_results = {}
+    for dataset_name in top_obs_data_refined.keys():
+        # Get provider-specific data for LLM providers, all LLM data for others
+        if provider_name in ['Anthropic', 'Google', 'OpenAI']:
+            llm_data, bo_data, random_data = get_provider_data(top_obs_data, dataset_name, provider_name)
+        else:
+            llm_data, bo_data, random_data = get_provider_data(top_obs_data, dataset_name)
+        
+        # LLM vs BO comparison
+        if len(llm_data) > 0 and len(bo_data) > 0:
+            p_val, effect_size, result_text = perform_statistical_analysis(llm_data, bo_data, provider_name, "BO")
+            statistical_results[dataset_name] = {
+                'llm_vs_bo': (p_val, effect_size, result_text),
+                'llm_data': llm_data,
+                'bo_data': bo_data,
+                'random_data': random_data
+            }
+        else:
+            statistical_results[dataset_name] = {
+                'llm_vs_bo': (None, None, "No data"),
+                'llm_data': llm_data,
+                'bo_data': bo_data,
+                'random_data': random_data
+            }
+    
+    # Get best LLM vs best BO comparisons for visual display
+    best_comparisons = find_best_llm_vs_best_bo_per_dataset(top_obs_data)
     
     # Fixed figure sizing for consistent 2x2 layout
     fig_width = 15
@@ -413,7 +649,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
         position = method_positions[method_name]
         offset = 0
         
-        for dataset_name, dataset_data in convergence_data_refined.items():
+        for dataset_name, dataset_data in top_obs_data_refined.items():
             if dataset_name not in provider_data:
                 provider_data[dataset_name] = {}
             for key, method_data in dataset_data.items():
@@ -427,21 +663,21 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
                 current_method = current_method.replace('-preview-06-17', '')
                 
                 if current_method == method_name:
-                    provider_data[dataset_name][method_name] = method_data['convergence_indices']
+                    provider_data[dataset_name][method_name] = method_data['top_obs']
                     boxplot = ax.boxplot(
-                        method_data['convergence_indices'],
+                        method_data['top_obs'],
                         positions=[position + offset],
                         widths=0.3,
                         patch_artist=True,
                         showfliers=True,
                         zorder=3
                     )
-                    IQR = np.percentile(method_data['convergence_indices'], 75) - np.percentile(method_data['convergence_indices'], 25)
+                    IQR = np.percentile(method_data['top_obs'], 75) - np.percentile(method_data['top_obs'], 25)
                     
                     # Customize boxplot appearance
                     # Set median properties first so it appears behind the box
                     for median in boxplot['medians']:
-                        if IQR == 0 and np.median(method_data['convergence_indices']) == 100:
+                        if IQR == 0 and np.median(method_data['top_obs']) == 100:
                             median.set(color='k', linewidth=4, zorder=2)
                             # Place a black box behind the asterisk
                             from matplotlib.patches import Rectangle
@@ -481,7 +717,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
         base_position = method_positions[method_name]
         # Count how many datasets have data for this method
         n_datasets = 0
-        for dataset_name, dataset_data in convergence_data_refined.items():
+        for dataset_name, dataset_data in top_obs_data_refined.items():
             for key in dataset_data.keys():
                 current_method = key.split('/')[-1]
                 current_method = current_method.replace('-1-20-20', '')
@@ -505,6 +741,8 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
             separator_x = (centered_positions[i] + centered_positions[i + 1]) / 2
             ax.axvline(x=separator_x, color='gray', linestyle='-', linewidth=2, alpha=0.7, zorder=0)
     
+
+    
     # Configure the plot
     ax.set_xticks(centered_positions)
     
@@ -519,9 +757,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
     ax.set_xticklabels(xticklabels, rotation=0, ha='center', fontsize=16)
     ax.grid(axis='y', linestyle='--', alpha=0.7, zorder=0)
     ax.grid(False, axis='x')
-    ax.set_ylim(0, 21)
-    # increment by 2
-    ax.set_yticks(np.arange(0, 21, 2))
+    ax.set_ylim(0, 105)
     ax.tick_params(axis='y', labelsize=20)
     ax.tick_params(axis='x', labelsize=16)
     
@@ -535,10 +771,25 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
     plt.tight_layout()
     plt.show()
     
+    # Print statistical results
+    print(f"\n=== Statistical Analysis for {provider_name} ===")
+    for dataset_name in top_obs_data_refined.keys():
+        if dataset_name in statistical_results:
+            p_val, effect_size, result_text = statistical_results[dataset_name]['llm_vs_bo']
+            llm_data = statistical_results[dataset_name]['llm_data']
+            bo_data = statistical_results[dataset_name]['bo_data']
+            
+            if p_val is not None:
+                print(f"{dataset_name}:")
+                print(f"  LLM vs BO: p={p_val:.4f}, δ={effect_size:.3f}")
+                print(f"  LLM: n={len(llm_data)}, median={np.median(llm_data):.1f}")
+                print(f"  BO: n={len(bo_data)}, median={np.median(bo_data):.1f}")
+            else:
+                print(f"{dataset_name}: Insufficient data for comparison")
+    
     return fig, ax, provider_data
 
 if __name__ == "__main__":
-    # user input for the run path
     # Get run path from command line argument or user input
     if len(sys.argv) > 1:
         run_path = sys.argv[1]
@@ -547,6 +798,7 @@ if __name__ == "__main__":
         run_path = input('Enter the run path: ')
     bo_benchmark_path = os.path.join(run_path, 'bayesian/{dataset_name}/benchmark/')
     llm_benchmark_path = os.path.join(run_path, 'llm/{dataset_name}/benchmark/')
+    random_path = os.path.join(run_path, 'random/{dataset_name}/')
     n_tracks = 20
     track_size = 20
 
@@ -557,44 +809,62 @@ if __name__ == "__main__":
         path_dict_with_run_paths[dataset_name] = {}
         bo_path = bo_benchmark_path.format(dataset_name=dataset_name)
         llm_path = llm_benchmark_path.format(dataset_name=dataset_name)
+        random_dataset_path = random_path.format(dataset_name=dataset_name)
         
-        bo_paths = [os.path.join(bo_path, path) for path in os.listdir(bo_path)]
-        llm_paths = [os.path.join(llm_path, path) for path in os.listdir(llm_path)]
-
-        for path in bo_paths:
-            if path.endswith('-20') or path.endswith('-20-des0'):
-                track_data, run_dirs = get_tracks(path, dataset_name, bo=True, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
-                if track_data is not None:
-                    path_dict[dataset_name][path] = track_data
-                    path_dict_with_run_paths[dataset_name][path] = {}
-                    for track, run_dir in zip(track_data, run_dirs):
-                        path_dict_with_run_paths[dataset_name][path][run_dir] = track
+        # Process BO paths
+        if os.path.exists(bo_path):
+            bo_paths = [os.path.join(bo_path, path) for path in os.listdir(bo_path)]
+            for path in bo_paths:
+                if path.endswith('-20') or path.endswith('-20-des0'):
+                    track_data, run_dirs = get_tracks(path, dataset_name, bo=True, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
+                    if track_data is not None:
+                        path_dict[dataset_name][path] = track_data
+                        path_dict_with_run_paths[dataset_name][path] = {}
+                        for track, run_dir in zip(track_data, run_dirs):
+                            path_dict_with_run_paths[dataset_name][path][run_dir] = track
         
-        for path in llm_paths:
-            if 'claude' in path and 'gpt' in path:
-                continue
-            if '1-20-20' in path:
-                try:
-                    track_data, run_dirs = get_tracks(path, dataset_name, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
-                except Exception as e:
-                    print(f'{path} - {e}')
+        # Process LLM paths
+        if os.path.exists(llm_path):
+            llm_paths = [os.path.join(llm_path, path) for path in os.listdir(llm_path)]
+            for path in llm_paths:
+                if 'claude' in path and 'gpt' in path:
                     continue
+                if '1-20-20' in path:
+                    try:
+                        track_data, run_dirs = get_tracks(path, dataset_name, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
+                    except Exception as e:
+                        print(f'{path} - {e}')
+                        continue
+                    if track_data is not None:
+                        path_dict[dataset_name][path] = track_data
+                        path_dict_with_run_paths[dataset_name][path] = {}
+                        for track, run_dir in zip(track_data, run_dirs):
+                            path_dict_with_run_paths[dataset_name][path][run_dir] = track
+        
+        # Process Random runs
+        if os.path.exists(random_dataset_path):
+            try:
+                track_data, run_dirs = get_tracks(random_dataset_path, dataset_name, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
                 if track_data is not None:
-                    path_dict[dataset_name][path] = track_data
-                    path_dict_with_run_paths[dataset_name][path] = {}
+                    # Create a path key for random runs
+                    random_key = os.path.join(random_dataset_path, 'random')
+                    path_dict[dataset_name][random_key] = track_data
+                    path_dict_with_run_paths[dataset_name][random_key] = {}
                     for track, run_dir in zip(track_data, run_dirs):
-                        path_dict_with_run_paths[dataset_name][path][run_dir] = track
+                        path_dict_with_run_paths[dataset_name][random_key][run_dir] = track
+            except Exception as e:
+                print(f'Error processing random runs for {dataset_name}: {e}')
 
     for dataset_name, paths in path_dict.items():
         print(f"{dataset_name}: {len(paths)}")
 
-    convergence_data = get_convergence_data(path_dict)
+    top_obs_data = get_top_obs_data(path_dict)
 
     # Sort by dataset_name based on how it appears in dataset_to_color
     sorted_dataset_names = sorted(dataset_to_color.keys(), key=lambda x: list(dataset_to_color.values()).index(dataset_to_color[x]), reverse=True)
 
     # Sort top_5_dict by the sorted dataset_names
-    convergence_data = {k: convergence_data[k] for k in sorted_dataset_names}
+    top_obs_data = {k: top_obs_data[k] for k in sorted_dataset_names}
     
     # Group methods by provider for boxplots
     method_data = {}
@@ -603,7 +873,7 @@ if __name__ == "__main__":
     remove_datasets = []
 
     # First collect all method names and their dataset coverage
-    for dataset_name, dataset_data in convergence_data.items():
+    for dataset_name, dataset_data in top_obs_data.items():
         for key in dataset_data.keys():
             method_name = key.split('/')[-1]
             method_name = method_name.replace('-1-20-20', '')
@@ -642,7 +912,11 @@ if __name__ == "__main__":
         all_provider_data[provider_name] = provider_data
         # Save the figure to ./pngs/figure_5_{provider_name}.png
         os.makedirs('./pngs', exist_ok=True)
-        plt.savefig(f'./pngs/figure_SI_convergence_{provider_name}.png', dpi=300, bbox_inches='tight')
+        if provider_name == 'Random':
+            figure_prefix = 'figure_S12'
+        else:
+            figure_prefix = 'figure_5'
+        plt.savefig(f'./pngs/{figure_prefix}_{provider_name}.png', dpi=300, bbox_inches='tight')
         
     print(f"\nCreated {len(provider_methods)} individual provider plots.")
 
@@ -650,5 +924,109 @@ if __name__ == "__main__":
     print(f"\nSummary of plotted providers:")
     for provider, methods in provider_methods.items():
         print(f"  {provider}: {len(methods)} methods - {', '.join(methods)}")
+    
+    # Best LLM vs Best BO analysis
+    print(f"\n=== BEST LLM vs BEST BO ANALYSIS ===")
+    best_comparisons = find_best_llm_vs_best_bo_per_dataset(top_obs_data)
+    
+    for dataset_name in sorted_dataset_names:
+        if dataset_name in best_comparisons:
+            comp = best_comparisons[dataset_name]
+            print(f"{dataset_name.replace('_', ' ').title()}:")
+            print(f"  🤖 Best LLM: {comp['best_llm']} (median: {comp['llm_median']:.1f}%)")
+            print(f"  🔬 Best BO: {comp['best_bo']} (median: {comp['bo_median']:.1f}%)")
+            
+            if comp['p_value'] is not None:
+                sig_marker = "***" if comp['p_value'] < 0.001 else "**" if comp['p_value'] < 0.01 else "*" if comp['p_value'] < 0.05 else "ns"
+                winner = "LLM" if comp['effect_size'] > 0 else "BO"
+                print(f"  ⚔️  Comparison: p={comp['p_value']:.4f} {sig_marker}, δ={comp['effect_size']:.3f} ({winner} advantage)")
+            print()
+    
+    # Best method analysis
+    print(f"\n=== BEST METHOD ANALYSIS ===")
+    best_methods = find_best_method_per_dataset(top_obs_data)
+    
+    for dataset_name in sorted_dataset_names:
+        if dataset_name in best_methods:
+            best_info = best_methods[dataset_name]
+            print(f"{dataset_name.replace('_', ' ').title()}:")
+            print(f"  🏆 Best method: {best_info['method']} (median: {best_info['median']:.1f}%)")
+            
+            if best_info['strongest_comparison']:
+                comp = best_info['strongest_comparison']
+                sig_marker = "***" if comp['p_value'] < 0.001 else "**" if comp['p_value'] < 0.01 else "*" if comp['p_value'] < 0.05 else "ns"
+                print(f"  📊 vs {comp['method']}: p={comp['p_value']:.4f} {sig_marker}, δ={comp['effect_size']:.3f}")
+                print(f"     ({best_info['median']:.1f}% vs {comp['median']:.1f}%)")
+            else:
+                print(f"  📊 No significant advantage over other methods")
+            print()
+    
+    # Overall statistical summary
+    print(f"\n=== OVERALL STATISTICAL SUMMARY ===")
+    print("LLM vs BO comparison across all datasets:")
+    
+    all_p_values = []
+    all_effect_sizes = []
+    significant_datasets = []
+    
+    for dataset_name in sorted_dataset_names:
+        llm_data, bo_data, random_data = get_provider_data(top_obs_data, dataset_name)
+        
+        if len(llm_data) > 0 and len(bo_data) > 0:
+            p_val, effect_size, result_text = perform_statistical_analysis(llm_data, bo_data, "LLM", "BO")
+            if p_val is not None:
+                all_p_values.append(p_val)
+                all_effect_sizes.append(effect_size)
+                if p_val < 0.05:
+                    significant_datasets.append(dataset_name)
+                
+                print(f"{dataset_name.replace('_', ' ').title()}:")
+                print(f"  p-value: {p_val:.4f}, Cliff's δ: {effect_size:.3f}")
+                print(f"  LLM median: {np.median(llm_data):.1f}% (n={len(llm_data)})")
+                print(f"  BO median: {np.median(bo_data):.1f}% (n={len(bo_data)})")
+                
+                if len(random_data) > 0:
+                    print(f"  Random median: {np.median(random_data):.1f}% (n={len(random_data)})")
+                print()
+    
+    if all_p_values:
+        print(f"Summary across {len(all_p_values)} datasets:")
+        print(f"  Significant differences (p<0.05): {len(significant_datasets)}/{len(all_p_values)} datasets")
+        print(f"  Mean effect size (Cliff's δ): {np.mean(all_effect_sizes):.3f}")
+        print(f"  Effect size range: [{np.min(all_effect_sizes):.3f}, {np.max(all_effect_sizes):.3f}]")
+        
+        # Apply Bonferroni correction
+        bonferroni_alpha = 0.05 / len(all_p_values)
+        bonferroni_significant = sum(p < bonferroni_alpha for p in all_p_values)
+        print(f"  Bonferroni-corrected significant (α={bonferroni_alpha:.4f}): {bonferroni_significant}/{len(all_p_values)} datasets")
+    
+    # Best method summary
+    print(f"\n=== BEST METHOD SUMMARY ===")
+    method_wins = {}
+    significant_wins = 0
+    total_comparisons = 0
+    
+    for dataset_name, best_info in best_methods.items():
+        method = best_info['method']
+        if method not in method_wins:
+            method_wins[method] = 0
+        method_wins[method] += 1
+        
+        if best_info['strongest_comparison'] and best_info['strongest_comparison']['p_value'] < 0.05:
+            significant_wins += 1
+        total_comparisons += 1
+    
+    print("Best method frequency:")
+    for method, count in sorted(method_wins.items(), key=lambda x: x[1], reverse=True):
+        print(f"  {method}: {count}/{len(best_methods)} datasets")
+    
+    print(f"\nStatistically significant advantages: {significant_wins}/{total_comparisons} datasets")
+
+    print(f'Figure 5 Anthropic saved to ./pngs/figure_5_Anthropic.png')
+    print(f'Figure 5 Google saved to ./pngs/figure_5_Google.png')
+    print(f'Figure 5 OpenAI saved to ./pngs/figure_5_OpenAI.png')
+    print(f'Figure 5 Atlas saved to ./pngs/figure_5_Atlas.png')
+    
+    print(f'Figure S12 Random saved to ./pngs/figure_S12_Random.png')
 
     

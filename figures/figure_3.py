@@ -491,4 +491,6 @@ if __name__ == "__main__":
     # Save the figure to ./pngs/figure_3.png
     os.makedirs('./pngs', exist_ok=True)
     plotly_fig.write_image('./pngs/figure_3.png', format='png', width=1200, height=800)
+
+    print(f'Figure 3 saved to ./pngs/figure_3.png')
         
