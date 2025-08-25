@@ -1,4 +1,3 @@
 .cache/
 __pycache__/
 **/pngs/
-computed_descriptors/

@@ -1,0 +1,278 @@
+{
+    "Buchwald_Hartwig": {
+        "base": [
+            "base_ATS8i",
+            "base_ATS6i",
+            "base_ATS7i",
+            "base_ATS6v",
+            "base_ATS5v",
+            "base_ATS7v",
+            "base_ATS5i",
+            "base_ATS4i",
+            "base_ATS4v",
+            "base_ATS8v"
+        ],
+        "ligand": [
+            "ligand_ATS8i",
+            "ligand_ATS8v",
+            "ligand_ATS7v",
+            "ligand_ATS6v",
+            "ligand_ATS7i",
+            "ligand_ATS5v",
+            "ligand_ATS3v",
+            "ligand_ATS4i",
+            "ligand_ATS4v",
+            "ligand_ATS6i"
+        ],
+        "aryl_halide": [
+            "aryl_halide_Xch-6dv",
+            "aryl_halide_C3SP2",
+            "aryl_halide_nI",
+            "aryl_halide_ATS7d",
+            "aryl_halide_NsBr",
+            "aryl_halide_NsCl",
+            "aryl_halide_PEOE_VSA2",
+            "aryl_halide_Xch-7d",
+            "aryl_halide_PEOE_VSA9",
+            "aryl_halide_PEOE_VSA10"
+        ],
+        "additive": [
+            "additive_nBondsD",
+            "additive_SlogP_VSA8",
+            "additive_SMR_VSA9",
+            "additive_BCUTd-1l",
+            "additive_piPC9",
+            "additive_piPC10",
+            "additive_BCUTs-1h",
+            "additive_GGI1",
+            "additive_BCUTm-1l",
+            "additive_ETA_epsilon_3"
+        ]
+    },
+    "Alkylation_Deprotection": {
+        "electrophile": [
+            "electrophile_nI",
+            "electrophile_nHRing",
+            "electrophile_SMR_VSA6",
+            "electrophile_PEOE_VSA2",
+            "electrophile_PEOE_VSA9",
+            "electrophile_AETA_beta_ns",
+            "electrophile_Xch-7d",
+            "electrophile_JGI5",
+            "electrophile_ETA_shape_y",
+            "electrophile_ATSC0s"
+        ],
+        "core": [
+            "core_ATS0m",
+            "core_ATS4v",
+            "core_ATSC0m",
+            "core_ATS8v",
+            "core_ATS4i",
+            "core_ATS3v",
+            "core_ATS5i",
+            "core_ATS6m",
+            "core_ATS8i",
+            "core_ATS7v"
+        ],
+        "base": [
+            "base_ATS7i",
+            "base_ATS6i",
+            "base_ATS8i",
+            "base_ATS6v",
+            "base_ATS5v",
+            "base_ATS5i",
+            "base_ATS7v",
+            "base_ATS4i",
+            "base_ATS4v",
+            "base_ATS3i"
+        ]
+    },
+    "Suzuki_Doyle": {
+        "electrophile": [
+            "electrophile_ATS0m",
+            "electrophile_ATSC0m",
+            "electrophile_ATS6v",
+            "electrophile_ATS5v",
+            "electrophile_ATS7v",
+            "electrophile_ATS6i",
+            "electrophile_ATS7i",
+            "electrophile_ATS4v",
+            "electrophile_ATS2m",
+            "electrophile_ATS5i"
+        ],
+        "nucleophile": [
+            "nucleophile_ATS8i",
+            "nucleophile_ATS7v",
+            "nucleophile_ATS6v",
+            "nucleophile_ATS7i",
+            "nucleophile_ATS4i",
+            "nucleophile_ATS3v",
+            "nucleophile_ATS4v",
+            "nucleophile_ATS8v",
+            "nucleophile_ATS5i",
+            "nucleophile_ATS5v"
+        ],
+        "base": [
+            "base_ATSC3pe",
+            "base_SRW06",
+            "base_NdO",
+            "base_FCSP3",
+            "base_EState_VSA1",
+            "base_SIC3",
+            "base_ATS0v",
+            "base_AATS0pe",
+            "base_VSA_EState3",
+            "base_ATSC3p"
+        ],
+        "ligand": [
+            "ligand_GhoseFilter",
+            "ligand_nHetero",
+            "ligand_NsssP",
+            "ligand_NssCH2",
+            "ligand_JGI8",
+            "ligand_EState_VSA1",
+            "ligand_SMR_VSA1",
+            "ligand_PetitjeanIndex",
+            "ligand_SlogP_VSA11",
+            "ligand_SlogP_VSA8"
+        ],
+        "solvent": [
+            "solvent_ATS3i",
+            "solvent_ATS4i",
+            "solvent_ATS2v",
+            "solvent_ATS2i",
+            "solvent_ATS3v",
+            "solvent_ATS1v",
+            "solvent_ATS0v",
+            "solvent_ATS0i",
+            "solvent_ATS1i",
+            "solvent_ATS2m"
+        ]
+    },
+    "Suzuki_Cernak": {
+        "halide": [
+            "halide_n6ARing",
+            "halide_Lipinski",
+            "halide_nFHRing",
+            "halide_n5aHRing",
+            "halide_nFARing",
+            "halide_GhoseFilter",
+            "halide_NssNH",
+            "halide_NsCl",
+            "halide_nFRing",
+            "halide_n9FRing"
+        ],
+        "boronate": [
+            "boronate_n6HRing",
+            "boronate_NdssC",
+            "boronate_n5aHRing",
+            "boronate_n6Ring",
+            "boronate_JGI10",
+            "boronate_BCUTs-1h",
+            "boronate_GATS5c",
+            "boronate_NsOH",
+            "boronate_SlogP_VSA8",
+            "boronate_NssNH"
+        ],
+        "conditions": [
+            "conditions_nBase",
+            "conditions_SlogP_VSA11",
+            "conditions_SlogP_VSA8",
+            "conditions_n6ARing",
+            "conditions_MINsCH3",
+            "conditions_nHBDon",
+            "conditions_NdO",
+            "conditions_C3SP2",
+            "conditions_VSA_EState7",
+            "conditions_MAXsCH3"
+        ]
+    },
+    "Chan_Lam_Full": {
+        "boronic_acid_reactant": [
+            "boronic_acid_reactant_ATS2m",
+            "boronic_acid_reactant_ATS7m",
+            "boronic_acid_reactant_ATS6i",
+            "boronic_acid_reactant_ATS4m",
+            "boronic_acid_reactant_ATS4i",
+            "boronic_acid_reactant_ATS3m",
+            "boronic_acid_reactant_ATS2v",
+            "boronic_acid_reactant_ATS0m",
+            "boronic_acid_reactant_ATS3v",
+            "boronic_acid_reactant_ATS7i"
+        ],
+        "sulfonamide_reactant": [
+            "sulfonamide_reactant_GhoseFilter",
+            "sulfonamide_reactant_ETA_beta_ns_d",
+            "sulfonamide_reactant_nHRing",
+            "sulfonamide_reactant_PEOE_VSA3",
+            "sulfonamide_reactant_n5Ring",
+            "sulfonamide_reactant_NdO",
+            "sulfonamide_reactant_NaaN",
+            "sulfonamide_reactant_BCUTd-1h",
+            "sulfonamide_reactant_Xc-4dv",
+            "sulfonamide_reactant_TopoShapeIndex"
+        ],
+        "catalyst_catalyst": [
+            "catalyst_catalyst_WPath",
+            "catalyst_catalyst_ECIndex",
+            "catalyst_catalyst_ATS4i",
+            "catalyst_catalyst_ATS5i",
+            "catalyst_catalyst_ATS7i",
+            "catalyst_catalyst_ATS3i",
+            "catalyst_catalyst_ATS3v",
+            "catalyst_catalyst_ATS2i",
+            "catalyst_catalyst_ATS4v",
+            "catalyst_catalyst_ATS6i"
+        ],
+        "base_reagent": [
+            "base_reagent_SMR_VSA3",
+            "base_reagent_nBondsD",
+            "base_reagent_C1SP3",
+            "base_reagent_PEOE_VSA2",
+            "base_reagent_SlogP_VSA10",
+            "base_reagent_Xc-4d",
+            "base_reagent_ATS5dv",
+            "base_reagent_EState_VSA4",
+            "base_reagent_SdssC",
+            "base_reagent_EState_VSA5"
+        ],
+        "solvent": [
+            "solvent_ATS3i",
+            "solvent_ATS5i",
+            "solvent_ATS2i",
+            "solvent_ATS0m",
+            "solvent_ATS2v",
+            "solvent_ATS3v",
+            "solvent_ATS4i",
+            "solvent_ATS4v",
+            "solvent_ATS1v",
+            "solvent_ATS6i"
+        ]
+    },
+    "Reductive_Amination": {
+        "substrate": [
+            "substrate_nBondsD",
+            "substrate_nARing",
+            "substrate_nHRing",
+            "substrate_GhoseFilter",
+            "substrate_C1SP3",
+            "substrate_NsssCH",
+            "substrate_n6aRing",
+            "substrate_piPC9",
+            "substrate_JGI7",
+            "substrate_TopoPSA(NO)"
+        ],
+        "solvent": [
+            "solvent_ATS3i",
+            "solvent_ATS2v",
+            "solvent_ATS5i",
+            "solvent_ATS3v",
+            "solvent_ATS1v",
+            "solvent_ATS2i",
+            "solvent_ATS2m",
+            "solvent_ATS0v",
+            "solvent_ATS1m",
+            "solvent_ATS1i"
+        ]
+    }
+}
