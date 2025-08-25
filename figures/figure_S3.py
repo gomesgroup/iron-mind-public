@@ -8,7 +8,7 @@ from scipy import stats
 from matplotlib.colors import LinearSegmentedColormap
 
 # Import the statistical functions and data loading from figure_5
-from figure_5 import (
+from figure_5_S12 import (
     get_top_obs_data, get_tracks, dataset_names, dataset_to_obj, model_to_provider,
     dataset_to_color, dataset_order, perform_statistical_analysis, get_provider_data,
     find_best_llm_vs_best_bo_per_dataset

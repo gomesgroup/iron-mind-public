@@ -22,7 +22,7 @@ spec = importlib.util.spec_from_file_location("figure_7", "figures/figure_7.py")
 figure_7 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(figure_7)
 
-from figure_5 import perform_statistical_analysis
+from figure_5_S12 import perform_statistical_analysis
 
 def setup_data(run_path):
     """Setup path_dict and dataset_param_options similar to entropy_distribution_analysis.py"""

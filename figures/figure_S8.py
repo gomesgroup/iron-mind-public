@@ -16,7 +16,7 @@ from olympus.datasets.dataset import Dataset
 
 # Import functions from figure_7.py
 import importlib.util
-spec = importlib.util.spec_from_file_location("figure_7", "figures/figure_7.py")
+spec = importlib.util.spec_from_file_location("figure_7_S10", "figures/figure_7_S10.py")
 figure_7 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(figure_7)
 
