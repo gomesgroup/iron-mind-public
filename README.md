@@ -10,6 +10,8 @@ You can access the website [here](https://gomes.andrew.cmu.edu/iron-mind).
 
 ## Repository Structure
 
+- `computed_descriptors/` - Descriptors used for Bayesian optimization methods
+- `descriptors/` - Code to reproduce descriptors
 - `figures/` - Python scripts for generating manuscript figures
 - `histograms/` - Histogram plots showing objective distributions for each dataset
 - `schematics/` - Chemical reaction schematics for each dataset
@@ -20,7 +22,7 @@ The repository works with six chemical reaction optimization datasets:
 - **Buchwald-Hartwig** - C-N coupling reactions (yield optimization)
 - **Suzuki-Miyaura A** - Cross-coupling reactions (yield optimization) 
 - **Suzuki-Miyaura B** - Cross-coupling reactions (conversion optimization)
-- **Reductive Amination** - Amine synthesis (percent conversion optimization)
+- **Reductive Amination** - Amine synthesis (conversion optimization)
 - **N-Alkylation/Deprotection** - Two-step synthesis (yield optimization)
 - **Chan-Lam Coupling** - C-N coupling reactions (multi-objective: desired vs undesired yield)
 
@@ -63,18 +65,16 @@ unzip runs.zip
 
 This will produce the `runs/` directory in your current working directory. Use this path when generating figures.
 
-## Usage
+## Figure Reproduction
 
 Each figure script in the `figures/` directory can be run independently:
 
 ```bash
 cd figures/
-python figure_2.py    # Dataset objective histograms
-python figure_3.py    # Optimization complexity analysis
-python figure_5.py    # LLM optimization performance
-python figure_6.py    # Duplicate suggestion analysis  
-python figure_7.py    # Entropy analysis
-python figure_SI_convergence.py  # Convergence analysis
+python figure_2.py
+python figure_3.py
+python figure_5_S12.py
+...
 ```
 
 To generate all figures:
@@ -84,14 +84,9 @@ bash generate_all_figures.sh <path_to_runs>
 
 Generated figures are saved to `figures/pngs/` directory.
 
-## Figure Descriptions
+## Descriptors
 
-- **Figure 2**: Histograms of objective values across all datasets
-- **Figure 3**: Radar charts showing optimization complexity metrics
-- **Figure 5**: Boxplots of LLM optimization performance by provider
-- **Figure 6**: Analysis of duplicate suggestions in LLM methods
-- **Figure 7**: Entropy analysis
-- **Figure SI Convergence Analysis**: Convergence analysis
+The descriptors used for Bayesian optimization can be found in `computed_descriptors`.
 
 ## Citation
 
