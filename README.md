@@ -98,7 +98,7 @@ If you use this code or data, please cite our manuscript:
 
 ```bibtex
 @article{macknight2025iron,
-  title={The Iron Mind Project: Benchmarking Artificial Intelligence on the Optimization of Scientific Experimental Campaigns},
+  title={Pre-trained knowledge elevates large language models beyond traditional chemical reaction optimizers},
   author={MacKnight, Robert and Regio, Jose Emilio and Ethier, Jeffrey G. and Baldwin, Luke A. and Gomes, Gabe},
   journal={arXiv preprint arXiv:2025.xxxxx},
   year={2025}
