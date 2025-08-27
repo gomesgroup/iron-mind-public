@@ -1,5 +1,9 @@
 # Iron Mind: Manuscript Figure Generation
 
+<p align="left">
+  <img src="logo.png" alt="Iron Mind Logo" width="600">
+</p>
+
 This repository contains the code to reproduce all figures from the Iron Mind manuscript. The repository provides Python scripts to generate publication-quality figures from benchmark optimization data across six chemical reaction datasets.
 
 ## Website for testing optimizers and engaging in human-driven optimization campaigns
