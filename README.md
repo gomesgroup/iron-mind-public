@@ -5,6 +5,7 @@
 </p>
 
 This repository contains the code to reproduce all figures from the Iron Mind manuscript. The repository provides Python scripts to generate publication-quality figures from benchmark optimization data across six chemical reaction datasets.
+The preprint can be found on arXiv: https://arxiv.org/abs/2509.00103
 
 ## Website for testing optimizers and engaging in human-driven optimization campaigns
 
