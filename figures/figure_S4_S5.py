@@ -35,12 +35,14 @@ dataset_to_obj = {
 
 model_to_provider = {
     "Anthropic": [
-        'claude-3-5-haiku',
-        'claude-3-5-sonnet',
+        # 'claude-3-5-haiku',
+        # 'claude-3-5-sonnet',
         'claude-3-7-sonnet',
         'claude-3-7-sonnet-thinking',
         'claude-sonnet-4',
+        'claude-sonnet-4-thinking',
         'claude-opus-4',
+        'claude-opus-4-1'
     ],
     "Google": [
         'gemini-2.0-flash',
@@ -51,12 +53,12 @@ model_to_provider = {
         'gemini-2.5-pro-medium',
     ],
     "OpenAI": [
-        'gpt-4o-mini',
-        'gpt-4o',
-        'gpt-4.1-mini',
-        'gpt-4.1',
+        'gpt-5-mini',
+        'gpt-5',
         'o4-mini-low',
         'o3-low',
+        'o4-mini-high',
+        'o3-high',
     ],
     "Atlas": [
         'atlas-ei',
@@ -70,6 +72,7 @@ model_to_provider = {
         'random',
     ]
 }
+
 
 dataset_to_color = {
     'reductive_amination': '#221150',
@@ -319,7 +322,7 @@ def create_time_to_best_plot(time_data, threshold_percent, save_path="./pngs/"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
-            
+            method_name = method_name.replace('-20250805', '')
             # Apply filtering - exclude gpt-4.1 with nano
             if 'gpt-4.1' in method_name and 'nano' in method_name:
                 continue
@@ -364,7 +367,7 @@ def create_time_to_best_plot(time_data, threshold_percent, save_path="./pngs/"):
                     key_method = key_method.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
                     key_method = key_method.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
                     key_method = key_method.replace('-preview-06-17', '')
-                    
+                    key_method = key_method.replace('-20250805', '')
                     if key_method == method_name:
                         method_data = data
                         break
@@ -451,6 +454,7 @@ def create_time_to_best_plot(time_data, threshold_percent, save_path="./pngs/"):
                     key_method = key_method.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
                     key_method = key_method.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
                     key_method = key_method.replace('-preview-06-17', '')
+                    key_method = key_method.replace('-20250805', '')
                     if key_method == method_name:
                         n_datasets += 1
                         dataset_samples.append(data['n_runs'])

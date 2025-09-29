@@ -35,12 +35,14 @@ dataset_to_obj = {
 
 model_to_provider = {
     "Anthropic": [
-        'claude-3-5-haiku',
-        'claude-3-5-sonnet',
+        # 'claude-3-5-haiku',
+        # 'claude-3-5-sonnet',
         'claude-3-7-sonnet',
         'claude-3-7-sonnet-thinking',
         'claude-sonnet-4',
+        'claude-sonnet-4-thinking',
         'claude-opus-4',
+        'claude-opus-4-1'
     ],
     "Google": [
         'gemini-2.0-flash',
@@ -51,12 +53,12 @@ model_to_provider = {
         'gemini-2.5-pro-medium',
     ],
     "OpenAI": [
-        'gpt-4o-mini',
-        'gpt-4o',
-        'gpt-4.1-mini',
-        'gpt-4.1',
+        'gpt-5-mini',
+        'gpt-5',
         'o4-mini-low',
         'o3-low',
+        'o4-mini-high',
+        'o3-high',
     ],
     "Atlas": [
         'atlas-ei',
@@ -65,8 +67,12 @@ model_to_provider = {
         'atlas-ucb-des',
         'atlas-pi',
         'atlas-pi-des',
+    ],
+    "Random": [
+        'random',
     ]
 }
+
 
 dataset_to_color = {
     'reductive_amination': '#221150',
@@ -289,6 +295,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
                 current_method = current_method.replace('-preview-06-17', '')
+                current_method = current_method.replace('-20250805', '')
                 
                 if current_method == method_name:
                     boxplot = ax.boxplot(
@@ -344,6 +351,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                 current_method = current_method.replace('-20250514', '')
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
+                current_method = current_method.replace('-20250805', '')
                 if current_method == method_name:
                     n_datasets += 1
                     break  # Only count once per dataset
@@ -425,6 +433,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
                 current_method = current_method.replace('-preview-06-17', '')
+                current_method = current_method.replace('-20250805', '')
                 
                 if current_method == method_name:
                     provider_data[dataset_name][method_name] = method_data['convergence_indices']
@@ -491,6 +500,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
                 current_method = current_method.replace('-preview-06-17', '')
+                current_method = current_method.replace('-20250805', '')
                 if current_method == method_name:
                     n_datasets += 1
                     break
@@ -613,6 +623,7 @@ if __name__ == "__main__":
             method_name = method_name.replace('-preview-04-17', '')
             method_name = method_name.replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             if 'gpt-4.1' in method_name and ('nano' in method_name):
                 continue

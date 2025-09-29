@@ -36,12 +36,14 @@ dataset_to_obj = {
 
 model_to_provider = {
     "Anthropic": [
-        'claude-3-5-haiku',
-        'claude-3-5-sonnet',
+        # 'claude-3-5-haiku',
+        # 'claude-3-5-sonnet',
         'claude-3-7-sonnet',
         'claude-3-7-sonnet-thinking',
         'claude-sonnet-4',
+        'claude-sonnet-4-thinking',
         'claude-opus-4',
+        'claude-opus-4-1'
     ],
     "Google": [
         'gemini-2.0-flash',
@@ -52,12 +54,12 @@ model_to_provider = {
         'gemini-2.5-pro-medium',
     ],
     "OpenAI": [
-        'gpt-4o-mini',
-        'gpt-4o',
-        'gpt-4.1-mini',
-        'gpt-4.1',
+        'gpt-5-mini',
+        'gpt-5',
         'o4-mini-low',
         'o3-low',
+        'o4-mini-high',
+        'o3-high',
     ],
     "Atlas": [
         'atlas-ei',
@@ -140,7 +142,7 @@ def get_provider_data(top_obs_data, dataset_name, specific_provider=None):
     for method_key, method_info in top_obs_data[dataset_name].items():
         method_name = method_key.split('/')[-1]
         method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
-        method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
+        method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des').replace('-20250805', '')
         method_name = method_name.replace('-preview-06-17', '')
         
         # Classify by provider
@@ -176,7 +178,7 @@ def find_best_llm_vs_best_bo_per_dataset(top_obs_data):
         for method_key, method_info in dataset_data.items():
             method_name = method_key.split('/')[-1]
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
-            method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
+            method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des').replace('-20250805', '')
             method_name = method_name.replace('-preview-06-17', '')
             
             median_perf = np.median(method_info['top_obs'])
@@ -233,7 +235,7 @@ def find_best_method_per_dataset(top_obs_data):
         for method_key, method_info in dataset_data.items():
             method_name = method_key.split('/')[-1]
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
-            method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
+            method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des').replace('-20250805', '')
             method_name = method_name.replace('-preview-06-17', '')
             
             median_perf = np.median(method_info['top_obs'])
@@ -496,6 +498,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
                 current_method = current_method.replace('-preview-06-17', '')
+                current_method = current_method.replace('-20250805', '')
                 
                 if current_method == method_name:
                     boxplot = ax.boxplot(
@@ -551,6 +554,7 @@ def plot_provider_boxplots(ax, provider_name, provider_method_list, remove_datas
                 current_method = current_method.replace('-20250514', '')
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
+                current_method = current_method.replace('-20250805', '')
                 if current_method == method_name:
                     n_datasets += 1
                     break  # Only count once per dataset
@@ -661,6 +665,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
                 current_method = current_method.replace('-preview-06-17', '')
+                current_method = current_method.replace('-20250805', '')
                 
                 if current_method == method_name:
                     provider_data[dataset_name][method_name] = method_data['top_obs']
@@ -727,6 +732,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
                 current_method = current_method.replace('-preview-04-17', '')
                 current_method = current_method.replace('-des0', '-des')
                 current_method = current_method.replace('-preview-06-17', '')
+                current_method = current_method.replace('-20250805', '')
                 if current_method == method_name:
                     n_datasets += 1
                     break
@@ -883,6 +889,7 @@ if __name__ == "__main__":
             method_name = method_name.replace('-preview-04-17', '')
             method_name = method_name.replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             if 'gpt-4.1' in method_name and ('nano' in method_name):
                 continue

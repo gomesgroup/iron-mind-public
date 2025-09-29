@@ -59,6 +59,7 @@ def create_methods_vs_random_analysis(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Apply filtering - exclude gpt-4.1 with nano
             if 'gpt-4.1' in method_name and 'nano' in method_name:
@@ -98,6 +99,7 @@ def create_methods_vs_random_analysis(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             if method_name == 'random':
                 random_data = method_info['top_obs']
@@ -113,6 +115,7 @@ def create_methods_vs_random_analysis(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Skip random vs random comparison
             if method_name == 'random':
@@ -222,7 +225,7 @@ def create_methods_vs_random_tables(results_df, save_path="./pngs/"):
         table_data = []
         
         # Group by provider for better organization
-        providers = ['Anthropic', 'Google', 'OpenAI', 'Atlas', 'Other']
+        providers = ['Anthropic', 'Google', 'OpenAI', 'Atlas']
         
         for provider in providers:
             provider_data = dataset_data[dataset_data['Provider'] == provider]
@@ -368,15 +371,15 @@ def create_methods_vs_random_tables(results_df, save_path="./pngs/"):
                     fontsize=16, fontweight='bold', y=0.95)
         
         # Add legend/notes
-        legend_text = ('Significance: *** p<0.001, ** p<0.01, * p<0.05, ns = not significant\n'
-                      'Effect Size: Cliff\'s δ (>0.474 large, >0.33 medium, >0.147 small, <0.147 negligible)\n'
-                      'Positive values indicate better performance than random baseline')
+        # legend_text = ('Significance: *** p<0.001, ** p<0.01, * p<0.05, ns = not significant\n'
+        #               'Effect Size: Cliff\'s δ (>0.474 large, >0.33 medium, >0.147 small, <0.147 negligible)\n'
+        #               'Positive values indicate better performance than random baseline')
         
-        plt.figtext(0.5, 0.02, legend_text, ha='center', fontsize=10, 
-                   style='italic', wrap=True)
+        # plt.figtext(0.5, 0.02, legend_text, ha='center', fontsize=10, 
+        #            style='italic', wrap=True)
         
         plt.tight_layout()
-        plt.subplots_adjust(top=0.9, bottom=0.15)
+        plt.subplots_adjust(top=0.9)
         
         # Save figure
         os.makedirs(save_path, exist_ok=True)

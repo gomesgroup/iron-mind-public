@@ -18,7 +18,13 @@ from matplotlib.colors import ListedColormap
 
 # Import functions from figure_7_new.py and figure_5.py
 import importlib.util
-spec = importlib.util.spec_from_file_location("figure_7_S10", "figure_7_S10.py")
+try:
+    spec = importlib.util.spec_from_file_location("figure_7_S10", "figures/figure_7_S10.py")
+except FileNotFoundError:
+    spec = importlib.util.spec_from_file_location("figure_7_S10", "figure_7_S10.py")
+except Exception as e:
+    print(f"Error importing figure_7_S10: {e}")
+    raise
 figure_7 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(figure_7)
 
@@ -76,20 +82,41 @@ def create_individual_entropy_statistical_matrices(entropy_data, save_path="./pn
     # Define provider mapping (same as entropy_distribution_analysis.py)
     model_to_provider = {
         "Anthropic": [
-            'claude-3-5-haiku', 'claude-3-5-sonnet', 'claude-3-7-sonnet',
-            'claude-3-7-sonnet-thinking', 'claude-sonnet-4', 'claude-opus-4',
+            # 'claude-3-5-haiku',
+            # 'claude-3-5-sonnet',
+            'claude-3-7-sonnet',
+            'claude-3-7-sonnet-thinking',
+            'claude-sonnet-4',
+            'claude-sonnet-4-thinking',
+            'claude-opus-4',
+            'claude-opus-4-1'
         ],
         "Google": [
-            'gemini-2.0-flash', 'gemini-2.5-flash-lite', 'gemini-2.5-flash',
-            'gemini-2.5-flash-medium', 'gemini-2.5-pro', 'gemini-2.5-pro-medium',
+            'gemini-2.0-flash',
+            'gemini-2.5-flash-lite',
+            'gemini-2.5-flash',
+            'gemini-2.5-flash-medium',
+            'gemini-2.5-pro',
+            'gemini-2.5-pro-medium',
         ],
         "OpenAI": [
-            'gpt-4o-mini', 'gpt-4o', 'gpt-4.1-mini', 'gpt-4.1', 'o4-mini-low', 'o3-low',
+            'gpt-5-mini',
+            'gpt-5',
+            'o4-mini-low',
+            'o3-low',
+            'o4-mini-high',
+            'o3-high',
         ],
         "Atlas": [
-            'atlas-ei', 'atlas-ei-des', 'atlas-ucb', 'atlas-ucb-des', 'atlas-pi', 'atlas-pi-des',
+            'atlas-ei',
+            'atlas-ei-des',
+            'atlas-ucb',
+            'atlas-ucb-des',
+            'atlas-pi',
+            'atlas-pi-des',
         ]
     }
+
     
     # Dataset ordering (same as entropy analysis)
     dataset_to_color = {
@@ -137,6 +164,7 @@ def create_individual_entropy_statistical_matrices(entropy_data, save_path="./pn
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Filter out nano methods
             if 'gpt-4.1' in method_name and 'nano' in method_name:

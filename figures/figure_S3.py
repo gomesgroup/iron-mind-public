@@ -27,6 +27,7 @@ def get_overall_best_method_per_dataset(top_obs_data):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Apply filtering - exclude gpt-4.1 with nano
             if 'gpt-4.1' in method_name and 'nano' in method_name:
@@ -95,6 +96,7 @@ def create_bootstrap_ci_table(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Apply filtering - exclude gpt-4.1 with nano
             if 'gpt-4.1' in method_name and 'nano' in method_name:
@@ -115,6 +117,7 @@ def create_bootstrap_ci_table(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             all_methods.add(method_name)
     
     # Sort methods by provider for better organization
@@ -145,6 +148,7 @@ def create_bootstrap_ci_table(top_obs_data, save_path="./"):
                     key_method = key_method.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
                     key_method = key_method.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
                     key_method = key_method.replace('-preview-06-17', '')
+                    key_method = key_method.replace('-20250805', '')
                     
                     if key_method == method_name:
                         method_data = data['top_obs']
@@ -365,6 +369,7 @@ def create_statistical_matrices(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Apply filtering - exclude gpt-4.1 with nano
             if 'gpt-4.1' in method_name and 'nano' in method_name:
@@ -399,6 +404,7 @@ def create_statistical_matrices(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Classify as LLM or BO
             is_llm = any(method_name in provider_methods for provider, provider_methods in model_to_provider.items() 
@@ -607,6 +613,7 @@ def create_statistical_summary_markdown(top_obs_data, save_path="./"):
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Apply same filtering as figure_5.py - exclude gpt-4.1 with nano
             if 'gpt-4.1' in method_name and 'nano' in method_name:

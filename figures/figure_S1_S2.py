@@ -26,6 +26,7 @@ def create_individual_statistical_matrices(top_obs_data, save_path="./pngs/indiv
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Apply filtering - exclude gpt-4.1 with nano
             if 'gpt-4.1' in method_name and 'nano' in method_name:
@@ -67,6 +68,7 @@ def create_individual_statistical_matrices(top_obs_data, save_path="./pngs/indiv
             method_name = method_name.replace('-1-20-20', '').replace('-latest', '').replace('-preview-03-25', '')
             method_name = method_name.replace('-20250514', '').replace('-preview-04-17', '').replace('-des0', '-des')
             method_name = method_name.replace('-preview-06-17', '')
+            method_name = method_name.replace('-20250805', '')
             
             # Classify as LLM or BO
             is_llm = any(method_name in provider_methods for provider, provider_methods in model_to_provider.items() 
