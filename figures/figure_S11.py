@@ -11,12 +11,12 @@ from olympus.datasets.dataset import Dataset
 plt.rcParams['font.family'] = 'SF Pro Display'
 
 dataset_names = [
-    'Buchwald_Hartwig', 
-    'Suzuki_Doyle', 
-    'Suzuki_Cernak', 
-    'Reductive_Amination', 
-    'Alkylation_Deprotection', 
-    'Chan_Lam_Full'
+    'Suzuki_Cernak',
+    'amide_coupling_hte', 
+    'Reductive_Amination',
+    'Suzuki_Doyle',
+    'Chan_Lam_Full',
+    'Buchwald_Hartwig'
 ]
 
 dataset_to_obj = {
@@ -24,12 +24,12 @@ dataset_to_obj = {
     'Suzuki_Doyle': 'yield', 
     'Suzuki_Cernak': 'conversion',
     'Reductive_Amination': 'percent_conversion',
-    'Alkylation_Deprotection': 'yield',
+    'amide_coupling_hte': 'yield',
     'Chan_Lam_Full': {
         'objectives': ['desired_yield', 'undesired_yield'],
-        'transform': 'subtract',  # desired - undesired
+        'transform': 'weighted_selectivity',  # (desired/(desired + undesired)) * desired
         'order': [0, 1],  # subtract objectives[1] from objectives[0]
-        'aggregation': 'mean'
+        'aggregation': 'min'
     }
 }
 
@@ -71,12 +71,12 @@ model_to_provider = {
 }
 
 dataset_to_color = {
-    'reductive_amination': '#221150',
-    'buchwald_hartwig': '#5e177f',
-    'chan_lam_full': '#972c7f',
-    'suzuki_cernak': '#d3426d',
-    'suzuki_doyle': '#f8755c',
-    'alkylation_deprotection': '#febb80'
+    'buchwald_hartwig': '#000000',  # Dark blue (darkest)
+    'chan_lam_full': '#0071b2',     # Dark Orange
+    'suzuki_doyle': '#009e74',      # Light Blue
+    'reductive_amination': '#cc797f', # Orange
+    'amide_coupling_hte': '#d55e00', # Yellow  
+    'suzuki_cernak': '#f0e142',      # Lighter gray
 }
 dataset_order = list(dataset_to_color.keys())
 
@@ -147,6 +147,16 @@ def get_objective_value(obs_or_group, dataset_config, aggregation='first'):
         if dataset_config['transform'] == 'subtract':
             order = dataset_config['order']
             result = objectives[order[0]] - objectives[order[1]]
+        elif dataset_config['transform'] == 'weighted_selectivity':
+            order = dataset_config.get('order', [0, 1])
+            desired = objectives[order[0]]
+            undesired = objectives[order[1]]
+            total = desired + undesired
+            if total > 0:
+                selectivity_ratio = desired / total
+                result = selectivity_ratio * desired
+            else:
+                result = 0.0
         else:
             raise ValueError(f"Unknown transformation: {dataset_config['transform']}")
         

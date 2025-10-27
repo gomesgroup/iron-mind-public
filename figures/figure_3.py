@@ -9,14 +9,21 @@ from plotly.subplots import make_subplots
 import os
 import sys
 
-dataset_names = ['Buchwald_Hartwig', 'Suzuki_Doyle', 'Suzuki_Cernak', 'Reductive_Amination', 'Alkylation_Deprotection', 'Chan_Lam_Full']
+dataset_names = [
+    'Suzuki_Cernak',
+    'amide_coupling_hte', 
+    'Reductive_Amination',
+    'Suzuki_Doyle',
+    'Chan_Lam_Full',
+    'Buchwald_Hartwig'
+]
 dataset_colors = {
-    'reductive_amination': '#221150', 
-    'buchwald_hartwig': '#5e177f', 
-    'chan_lam_full': '#972c7f', 
-    'suzuki_cernak': '#d3426d', 
-    'suzuki_doyle': '#f8755c', 
-    'alkylation_deprotection': '#febb80'
+    'buchwald_hartwig': '#000000',  # Dark blue (darkest)
+    'chan_lam_full': '#0071b2',     # Dark Orange
+    'suzuki_doyle': '#009e74',      # Light Blue
+    'reductive_amination': '#cc797f', # Orange
+    'amide_coupling_hte': '#d55e00', # Yellow  
+    'suzuki_cernak': '#f0e142',      # Lighter gray
 }
 
 dataset_to_obj = {
@@ -24,12 +31,12 @@ dataset_to_obj = {
     'Suzuki_Doyle': 'yield', 
     'Suzuki_Cernak': 'conversion',
     'Reductive_Amination': 'percent_conversion',
-    'Alkylation_Deprotection': 'yield',
+    'amide_coupling_hte': 'yield',
     'Chan_Lam_Full': {
         'objectives': ['desired_yield', 'undesired_yield'],
-        'transform': 'subtract',  # desired - undesired
-        'order': [0, 1],  # subtract objectives[1] from objectives[0]
-        'aggregation': 'mean'
+        'transform': 'weighted_selectivity',  # (desired/(desired + undesired)) * desired
+        'order': [0, 1],  # desired, undesired
+        'aggregation': 'min'  # Uses minimum selectivity for robustness
     }
 }
 
@@ -83,6 +90,16 @@ def get_objective_value(obs_or_group, dataset_config, aggregation='first'):
         if dataset_config['transform'] == 'subtract':
             order = dataset_config.get('order', [0, 1])
             return objectives[order[0]] - objectives[order[1]]
+        elif dataset_config['transform'] == 'weighted_selectivity':
+            order = dataset_config.get('order', [0, 1])
+            desired = objectives[order[0]]
+            undesired = objectives[order[1]]
+            total = desired + undesired
+            if total > 0:
+                selectivity_ratio = desired / total
+                return selectivity_ratio * desired
+            else:
+                return 0.0
         elif dataset_config['transform'] == 'add':
             return sum(objectives)
         elif dataset_config['transform'] == 'multiply':
@@ -133,9 +150,26 @@ def calculate_parameter_importance(dataset_name, dataset):
             # Get parameter values (first row of group since they're all the same)
             param_values = group[param_names_filtered].iloc[0].tolist()
             
-            # Calculate objective using same logic as get_tracks
-            dataset_config = dataset_to_obj[dataset_name]
-            obj_value = get_objective_value(group, dataset_config, aggregation=dataset_config['aggregation'])  # or 'mean'
+            # Calculate weighted selectivity for each measurement in the group
+            desired_yields = group['desired_yield'].values
+            undesired_yields = group['undesired_yield'].values
+            
+            # Calculate weighted selectivity: (desired/(desired + undesired)) * desired
+            weighted_selectivities = []
+            for desired, undesired in zip(desired_yields, undesired_yields):
+                total = desired + undesired
+                if total > 0:
+                    selectivity_ratio = desired / total
+                    weighted_selectivity = selectivity_ratio * desired
+                    weighted_selectivities.append(weighted_selectivity)
+                else:
+                    weighted_selectivities.append(0.0)
+            
+            # Use minimum weighted selectivity for the parameter group (worst-case/lower bound)
+            if weighted_selectivities:
+                obj_value = np.min(weighted_selectivities)
+            else:
+                obj_value = 0.0
             
             # Combine parameters and objective
             row_data = param_values + [obj_value]
@@ -417,14 +451,27 @@ if __name__ == "__main__":
             obj_data = []
             
             for name, group in param_groups:
-                # Use the same get_objective_value function with aggregation
-                dataset_config = dataset_to_obj[dataset_name]
-                if 'aggregation' in dataset_config:
-                    aggregation = dataset_config['aggregation']
+                # Calculate weighted selectivity for each measurement in the group
+                desired_yields = group['desired_yield'].values
+                undesired_yields = group['undesired_yield'].values
+                
+                # Calculate weighted selectivity: (desired/(desired + undesired)) * desired
+                weighted_selectivities = []
+                for desired, undesired in zip(desired_yields, undesired_yields):
+                    total = desired + undesired
+                    if total > 0:
+                        selectivity_ratio = desired / total
+                        weighted_selectivity = selectivity_ratio * desired
+                        weighted_selectivities.append(weighted_selectivity)
+                    else:
+                        weighted_selectivities.append(0.0)
+                
+                # Use minimum weighted selectivity for the parameter group (worst-case/lower bound)
+                if weighted_selectivities:
+                    min_weighted_selectivity = np.min(weighted_selectivities)
+                    obj_data.append(min_weighted_selectivity)
                 else:
-                    aggregation = 'mean'
-                obj_value = get_objective_value(group, dataset_config, aggregation=aggregation)  # or 'mean', etc.
-                obj_data.append(obj_value)
+                    obj_data.append(0.0)
             
             space_size = len(obj_data)  # Number of unique parameter combinations
         else:
@@ -483,7 +530,14 @@ if __name__ == "__main__":
 
     df = pd.DataFrame(dataset_info).T
     df = df[['space_size', 'n_params', 'avg_num_options', 'objective_skewness', 'scarcity_index', 'param_importance_balance']]
-    df = df.reindex(['Alkylation_Deprotection', 'Suzuki_Doyle', 'Suzuki_Cernak', 'Chan_Lam_Full', 'Buchwald_Hartwig', 'Reductive_Amination'])
+    df = df.reindex([
+        'Suzuki_Cernak',
+        'amide_coupling_hte', 
+        'Reductive_Amination',
+        'Suzuki_Doyle',
+        'Chan_Lam_Full',
+        'Buchwald_Hartwig'
+    ])
     df = df.rename(columns={'space_size': 'PSS', 'n_params': 'NP', 'avg_num_options': 'AOP', 'objective_skewness': 'SKEW', 'scarcity_index': 'SI', 'param_importance_balance': 'PIB'})
 
     plotly_fig, scores, out_df = create_plotly_radar_charts(df, 'Comparison of Optimization Complexity', normalize=True, use_min_area=True)

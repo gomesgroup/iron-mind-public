@@ -14,7 +14,7 @@ dataset_names = [
     'Suzuki_Doyle', 
     'Suzuki_Cernak', 
     'Reductive_Amination', 
-    'Alkylation_Deprotection', 
+    'amide_coupling_hte', 
     'Chan_Lam_Full'
 ]
 
@@ -23,12 +23,12 @@ dataset_to_obj = {
     'Suzuki_Doyle': 'yield', 
     'Suzuki_Cernak': 'conversion',
     'Reductive_Amination': 'percent_conversion',
-    'Alkylation_Deprotection': 'yield',
+    'amide_coupling_hte': 'yield',
     'Chan_Lam_Full': {
         'objectives': ['desired_yield', 'undesired_yield'],
-        'transform': 'subtract',  # desired - undesired
-        'order': [0, 1],  # subtract objectives[1] from objectives[0]
-        'aggregation': 'mean'
+        'transform': 'weighted_selectivity',  # (desired/(desired + undesired)) * desired
+        'order': [0, 1],  # desired, undesired
+        'aggregation': 'min'  # Uses minimum selectivity for robustness
     }
 }
 
@@ -70,12 +70,12 @@ model_to_provider = {
 }
 
 dataset_to_color = {
-    'reductive_amination': '#221150',
-    'buchwald_hartwig': '#5e177f',
-    'chan_lam_full': '#972c7f',
-    'suzuki_cernak': '#d3426d',
-    'suzuki_doyle': '#f8755c',
-    'alkylation_deprotection': '#febb80'
+    'buchwald_hartwig': '#000000',  # Dark blue (darkest)
+    'chan_lam_full': '#0071b2',     # Dark Orange
+    'suzuki_doyle': '#009e74',      # Light Blue
+    'reductive_amination': '#cc797f', # Orange
+    'amide_coupling_hte': '#d55e00', # Yellow  
+    'suzuki_cernak': '#f0e142',      # Lighter gray
 }
 dataset_order = list(dataset_to_color.keys())
 

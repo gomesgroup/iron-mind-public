@@ -34,12 +34,12 @@ def setup_data(run_path):
     """Setup path_dict and dataset_param_options similar to entropy_distribution_analysis.py"""
     
     dataset_names = [
-        'Buchwald_Hartwig', 
-        'Suzuki_Doyle', 
-        'Suzuki_Cernak', 
-        'Reductive_Amination', 
-        'Alkylation_Deprotection', 
-        'Chan_Lam_Full'
+        'Suzuki_Cernak',
+        'amide_coupling_hte', 
+        'Reductive_Amination',
+        'Suzuki_Doyle',
+        'Chan_Lam_Full',
+        'Buchwald_Hartwig'
     ]
     
     # Load path_dict similar to figure_5.py and figure_7.py
@@ -125,7 +125,7 @@ def create_individual_entropy_statistical_matrices(entropy_data, save_path="./pn
         'chan_lam_full': '#972c7f',
         'suzuki_cernak': '#d3426d',
         'suzuki_doyle': '#f8755c',
-        'alkylation_deprotection': '#febb80'
+        'amide_coupling_hte': '#febb80'
     }
     
     sorted_dataset_names = sorted(dataset_to_color.keys(), 
@@ -142,7 +142,7 @@ def create_individual_entropy_statistical_matrices(entropy_data, save_path="./pn
         'chan_lam_full': 'Chan-Lam',
         'buchwald_hartwig': 'Buchwald-Hartwig',
         'reductive_amination': 'Reductive Amination',
-        'alkylation_deprotection': 'Alkylation Deprotection'
+        'amide_coupling_hte': 'Amide Coupling HTE'
     }
     
     # Create matrices for each dataset
@@ -380,13 +380,13 @@ def main():
     print(f'Figure S6 Suzuki_Doyle saved to ./pngs/figure_S6_Suzuki_Doyle.png')
     print(f'Figure S6 Suzuki_Cernak saved to ./pngs/figure_S6_Suzuki_Cernak.png')
     print(f'Figure S6 Reductive_Amination saved to ./pngs/figure_S6_Reductive_Amination.png')
-    print(f'Figure S6 Alkylation_Deprotection saved to ./pngs/figure_S6_Alkylation_Deprotection.png')
+    print(f'Figure S6 amide_coupling_hte saved to ./pngs/figure_S6_amide_coupling_hte.png')
     print(f'Figure S6 Chan_Lam_Full saved to ./pngs/figure_S6_Chan_Lam_Full.png')
     print(f'Figure S7 Buchwald_Hartwig saved to ./pngs/figure_S7_Buchwald_Hartwig.png')
     print(f'Figure S7 Suzuki_Doyle saved to ./pngs/figure_S7_Suzuki_Doyle.png')
     print(f'Figure S7 Suzuki_Cernak saved to ./pngs/figure_S7_Suzuki_Cernak.png')
     print(f'Figure S7 Reductive_Amination saved to ./pngs/figure_S7_Reductive_Amination.png')
-    print(f'Figure S7 Alkylation_Deprotection saved to ./pngs/figure_S7_Alkylation_Deprotection.png')
+    print(f'Figure S7 amide_coupling_hte saved to ./pngs/figure_S7_amide_coupling_hte.png')
     print(f'Figure S7 Chan_Lam_Full saved to ./pngs/figure_S7_Chan_Lam_Full.png')
 
 if __name__ == "__main__":

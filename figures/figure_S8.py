@@ -30,12 +30,12 @@ def setup_data(run_path):
     """Setup path_dict and dataset_param_options similar to figure_7.py"""
     
     dataset_names = [
-        'Buchwald_Hartwig', 
-        'Suzuki_Doyle', 
-        'Suzuki_Cernak', 
-        'Reductive_Amination', 
-        'Alkylation_Deprotection', 
-        'Chan_Lam_Full'
+        'Suzuki_Cernak',
+        'amide_coupling_hte', 
+        'Reductive_Amination',
+        'Suzuki_Doyle',
+        'Chan_Lam_Full',
+        'Buchwald_Hartwig'
     ]
     
     # Load path_dict similar to figure_5.py and figure_7.py
@@ -137,12 +137,12 @@ def create_entropy_bootstrap_ci_table(entropy_data):
     
     # Dataset ordering (same as performance analysis)
     dataset_to_color = {
-        'reductive_amination': '#221150',
-        'buchwald_hartwig': '#5e177f',
+        'buchwald_hartwig': '#3a0f5c',
         'chan_lam_full': '#972c7f',
-        'suzuki_cernak': '#d3426d',
-        'suzuki_doyle': '#f8755c',
-        'alkylation_deprotection': '#febb80'
+        'suzuki_doyle': '#8e47a7',
+        'reductive_amination': '#221150',
+        'amide_coupling_hte': '#febb80',
+        'suzuki_cernak': '#d3426d'
     }
     
     sorted_dataset_names = sorted(dataset_to_color.keys(), 
@@ -238,17 +238,17 @@ def create_entropy_bootstrap_ci_figure(entropy_data):
         'chan_lam_full': 'Chan-Lam',
         'buchwald_hartwig': 'Buchwald-Hartwig',
         'reductive_amination': 'Reductive Amination',
-        'alkylation_deprotection': 'Alkylation Deprotection'
+        'amide_coupling_hte': 'Amide Coupling HTE'
     }
     
     # Sort datasets by color order (same as performance figures)
     dataset_to_color = {
-        'reductive_amination': '#221150',
-        'buchwald_hartwig': '#5e177f',
+        'buchwald_hartwig': '#3a0f5c',
         'chan_lam_full': '#972c7f',
-        'suzuki_cernak': '#d3426d',
-        'suzuki_doyle': '#f8755c',
-        'alkylation_deprotection': '#febb80'
+        'suzuki_doyle': '#8e47a7',
+        'reductive_amination': '#221150',
+        'amide_coupling_hte': '#febb80',
+        'suzuki_cernak': '#d3426d'
     }
     
     sorted_dataset_names = sorted(dataset_to_color.keys(), 
@@ -437,12 +437,12 @@ def create_entropy_statistical_matrices(entropy_data):
     
     # Dataset ordering (same as performance analysis)
     dataset_to_color = {
-        'reductive_amination': '#221150',
-        'buchwald_hartwig': '#5e177f',
+        'buchwald_hartwig': '#3a0f5c',
         'chan_lam_full': '#972c7f',
-        'suzuki_cernak': '#d3426d',
-        'suzuki_doyle': '#f8755c',
-        'alkylation_deprotection': '#febb80'
+        'suzuki_doyle': '#8e47a7',
+        'reductive_amination': '#221150',
+        'amide_coupling_hte': '#febb80',
+        'suzuki_cernak': '#d3426d'
     }
     
     sorted_dataset_names = sorted(dataset_to_color.keys(), 
@@ -536,7 +536,7 @@ def create_entropy_matrix_plots(p_value_matrices, effect_size_matrices, sorted_d
         'chan_lam_full': 'Chan-Lam',
         'buchwald_hartwig': 'Buchwald-Hartwig',
         'reductive_amination': 'Reductive Amination',
-        'alkylation_deprotection': 'Alkylation Deprotection'
+        'amide_coupling_hte': 'Amide Coupling HTE'
     }
     
     # Create two figures: one for p-values, one for effect sizes
@@ -945,7 +945,7 @@ def main():
     print("="*60)
     
     # Use the raw entropy data for bootstrap analysis
-    bootstrap_fig = create_entropy_bootstrap_ci_figure(entropy_analysis['entropy_data'])
+    bootstrap_fig = create_entropy_bootstrap_ci_figure(entropy_data)
 
     print(f'Figure S8 saved to ./pngs/figure_S8.png')
     

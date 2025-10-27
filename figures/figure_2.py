@@ -6,7 +6,14 @@ import os
 import sys
 
 
-dataset_names = ['Buchwald_Hartwig', 'Suzuki_Doyle', 'Suzuki_Cernak', 'Reductive_Amination', 'Alkylation_Deprotection', 'Chan_Lam_Full']
+dataset_names = [
+    'Buchwald_Hartwig', 
+    'Suzuki_Doyle', 
+    'Suzuki_Cernak', 
+    'Reductive_Amination', 
+    'amide_coupling_hte', 
+    'Chan_Lam_Full'
+]
 
 def gather_data():
     box_plot_data = {
@@ -27,19 +34,35 @@ def gather_data():
             # Get parameter names
             param_names = [p.name for p in dataset.param_space]
             
-            # Group by parameters and calculate desired - undesired yield
+            # Group by parameters and calculate weighted selectivity: (desired/(desired + undesired)) * desired
             param_groups = raw_data.groupby(param_names)
             obj_data = []
             
             for name, group in param_groups:
-                # Average desired and undesired yields within each parameter group (consistent with optimization analysis)
-                avg_desired_yield = group['desired_yield'].mean()
-                avg_undesired_yield = group['undesired_yield'].mean()
-                net_selectivity = avg_desired_yield - avg_undesired_yield
-                obj_data.append(net_selectivity)
+                # Calculate weighted selectivity for each measurement in the group
+                desired_yields = group['desired_yield'].values
+                undesired_yields = group['undesired_yield'].values
+                
+                # Calculate weighted selectivity: (desired/(desired + undesired)) * desired
+                weighted_selectivities = []
+                for desired, undesired in zip(desired_yields, undesired_yields):
+                    total = desired + undesired
+                    if total > 0:
+                        selectivity_ratio = desired / total
+                        weighted_selectivity = selectivity_ratio * desired
+                        weighted_selectivities.append(weighted_selectivity)
+                    else:
+                        weighted_selectivities.append(0.0)  # If both are zero, assign 0
+                
+                # Use minimum weighted selectivity for the parameter group (worst-case/lower bound)
+                if weighted_selectivities:
+                    min_weighted_selectivity = np.min(weighted_selectivities)
+                    obj_data.append(min_weighted_selectivity)
+                else:
+                    obj_data.append(0.0)
             
             # Create dataset label
-            dataset_label = dataset_name.replace('_', '\n').upper() + '\n(yield_difference)'
+            dataset_label = dataset_name.replace('_', '\n').upper() + '\n(weighted_selectivity)'
             box_plot_data[dataset_label] = obj_data
         else:
             obj = dataset.value_space[0].name
@@ -51,6 +74,8 @@ def gather_data():
                 dataset_name = 'Suzuki_Cernak'
             elif 'doyle' in dataset_name.lower():
                 dataset_name = 'Suzuki_Doyle'
+            elif 'hte' in dataset_name.lower():
+                dataset_name = 'Amide_Coupling_HTE'
             box_plot_data[dataset_name.replace('_', '\n').upper() + f'\n({obj})'] = obj_data
 
     return box_plot_data
@@ -64,12 +89,12 @@ if __name__ == "__main__":
 
     # Use consistent color scheme from other figures
     dataset_to_color = {
-        'reductive_amination': '#221150',
-        'buchwald_hartwig': '#5e177f',
-        'chan_lam_full': '#972c7f',
-        'suzuki_cernak': '#d3426d',
-        'suzuki_doyle': '#f8755c',
-        'alkylation_deprotection': '#febb80'
+        'buchwald_hartwig': '#000000',  # Dark blue (darkest)
+        'suzuki_doyle': '#009e74',      # Light Blue
+        'chan_lam_full': '#0071b2',     # Dark Orange
+        'reductive_amination': '#cc797f', # Orange
+        'amide_coupling_hte': '#d55e00', # Yellow
+        'suzuki_cernak': '#f0e142'      # Lighter gray
     }
 
     # Create figure with 3 rows, 2 columns instead of 2 rows, 3 columns
@@ -80,12 +105,12 @@ if __name__ == "__main__":
 
     # Map datasets to specific positions in the new 3x2 layout
     positions = [
-        (0, 0, 'Alkylation_Deprotection'),
-        (0, 1, "Suzuki_Doyle"),    
-        (0, 2, "Suzuki_Cernak"),
-        (1, 0, "Chan_Lam_Full"),
-        (1, 1, "Buchwald_Hartwig"),              
-        (1, 2, "Reductive_Amination")         
+        (0, 0, 'Suzuki_Cernak'),
+        (0, 1, "Amide_Coupling_HTE"),    
+        (0, 2, "Reductive_Amination"),
+        (1, 0, "Suzuki_Doyle"),
+        (1, 1, "Chan_Lam_Full"),              
+        (1, 2, "Buchwald_Hartwig")         
     ]
 
     # Manually assign each dataset to the correct position

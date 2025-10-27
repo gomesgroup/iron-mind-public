@@ -209,7 +209,7 @@ def create_bootstrap_ci_figure(top_obs_data, save_path="./pngs/"):
             'chan_lam_full': 'Chan-Lam',
             'buchwald_hartwig': 'Buchwald-Hartwig',
             'reductive_amination': 'Reductive Amination',
-            'alkylation_deprotection': 'Alkylation Deprotection'
+            'amide_coupling_hte': 'Amide Coupling HTE'
         }
         
         display_name = dataset_name_mapping.get(dataset_key, dataset_key.replace('_', ' ').title())

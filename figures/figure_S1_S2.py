@@ -49,7 +49,7 @@ def create_individual_statistical_matrices(top_obs_data, save_path="./pngs/indiv
         'chan_lam_full': 'Chan-Lam',
         'buchwald_hartwig': 'Buchwald-Hartwig',
         'reductive_amination': 'Reductive Amination',
-        'alkylation_deprotection': 'Alkylation Deprotection'
+        'amide_coupling_hte': 'Amide Coupling HTE'
     }
     
     # Create matrices for each dataset
@@ -309,12 +309,15 @@ if __name__ == "__main__":
     
     print("\nAll individual figures have been generated successfully!")
 
-    print(f'Figure S1 Buchwald_Hartwig saved to ./pngs/figure_S1_Buchwald_Hartwig.png')
-    print(f'Figure S1 Suzuki_Doyle saved to ./pngs/figure_S1_Suzuki_Doyle.png')
-    print(f'Figure S1 Suzuki_Cernak saved to ./pngs/figure_S1_Suzuki_Cernak.png')
-    print(f'Figure S1 Reductive_Amination saved to ./pngs/figure_S1_Reductive_Amination.png')
-    print(f'Figure S1 Alkylation_Deprotection saved to ./pngs/figure_S1_Alkylation_Deprotection.png')
-    print(f'Figure S1 Chan_Lam_Full saved to ./pngs/figure_S1_Chan_Lam_Full.png')
-    print(f'Figure S2 Buchwald_Hartwig saved to ./pngs/figure_S2_Buchwald_Hartwig.png')
-    print(f'Figure S2 Suzuki_Doyle saved to ./pngs/figure_S2_Suzuki_Doyle.png')
-    print(f'Figure S2 Suzuki_Cernak saved to ./pngs/figure_S2_Suzuki_Cernak.png')
+    print(f'Figure S1 Buchwald_Hartwig saved to ./pngs/figure_S1_buchwald-hartwig.png')
+    print(f'Figure S1 Suzuki_Doyle saved to ./pngs/figure_S1_suzuki-doyle.png')
+    print(f'Figure S1 Suzuki_Cernak saved to ./pngs/figure_S1_suzuki-cernak.png')
+    print(f'Figure S1 Reductive_Amination saved to ./pngs/figure_S1_reductive-amination.png')
+    print(f'Figure S1 amide_coupling_hte saved to ./pngs/figure_S1_amide-coupling-hte.png')
+    print(f'Figure S1 Chan_Lam_Full saved to ./pngs/figure_S1_chan-lam-full.png')
+    print(f'Figure S2 Buchwald_Hartwig saved to ./pngs/figure_S2_buchwald-hartwig.png')
+    print(f'Figure S2 Suzuki_Doyle saved to ./pngs/figure_S2_suzuki-doyle.png')
+    print(f'Figure S2 Suzuki_Cernak saved to ./pngs/figure_S2_suzuki-cernak.png')
+    print(f'Figure S2 Reductive_Amination saved to ./pngs/figure_S2_reductive-amination.png')
+    print(f'Figure S2 amide_coupling_hte saved to ./pngs/figure_S2_amide-coupling-hte.png')
+    print(f'Figure S2 Chan_Lam_Full saved to ./pngs/figure_S2_chan-lam-full.png')

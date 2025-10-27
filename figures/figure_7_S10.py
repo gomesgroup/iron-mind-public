@@ -12,12 +12,12 @@ from olympus.datasets.dataset import Dataset
 plt.rcParams['font.family'] = 'SF Pro Display'
 
 dataset_names = [
-    'Buchwald_Hartwig', 
-    'Suzuki_Doyle', 
-    'Suzuki_Cernak', 
-    'Reductive_Amination', 
-    'Alkylation_Deprotection', 
-    'Chan_Lam_Full'
+    'Suzuki_Cernak',
+    'amide_coupling_hte', 
+    'Reductive_Amination',
+    'Suzuki_Doyle',
+    'Chan_Lam_Full',
+    'Buchwald_Hartwig'
 ]
 
 dataset_to_obj = {
@@ -25,12 +25,12 @@ dataset_to_obj = {
     'Suzuki_Doyle': 'yield', 
     'Suzuki_Cernak': 'conversion',
     'Reductive_Amination': 'percent_conversion',
-    'Alkylation_Deprotection': 'yield',
+    'amide_coupling_hte': 'yield',
     'Chan_Lam_Full': {
         'objectives': ['desired_yield', 'undesired_yield'],
-        'transform': 'subtract',  # desired - undesired
-        'order': [0, 1],  # subtract objectives[1] from objectives[0]
-        'aggregation': 'mean'
+        'transform': 'weighted_selectivity',  # (desired/(desired + undesired)) * desired
+        'order': [0, 1],  # desired, undesired
+        'aggregation': 'min'
     }
 }
 
@@ -72,12 +72,12 @@ model_to_provider = {
 }
 
 dataset_to_color = {
-    'reductive_amination': '#221150',
-    'buchwald_hartwig': '#5e177f',
-    'chan_lam_full': '#972c7f',
-    'suzuki_cernak': '#d3426d',
-    'suzuki_doyle': '#f8755c',
-    'alkylation_deprotection': '#febb80'
+    'buchwald_hartwig': '#000000',  # Dark blue (darkest)
+    'chan_lam_full': '#0071b2',     # Dark Orange
+    'suzuki_doyle': '#009e74',      # Light Blue
+    'reductive_amination': '#cc797f', # Orange
+    'amide_coupling_hte': '#d55e00', # Yellow  
+    'suzuki_cernak': '#f0e142',      # Lighter gray
 }
 dataset_order = list(dataset_to_color.keys())
 
@@ -612,11 +612,11 @@ def analyze_entropy_median_distribution(entropy_data):
                 median_val = data['median']
                 method_name = method_path.split('/')[-1].replace('-1-20-20', '').replace('-des0', '-des')
                 
-                # Get simplified method name
-                for full_name, short_name in method_name_mapping.items():
-                    if full_name in method_name:
-                        method_name = short_name
-                        break
+                # Get simplified method name (commented out due to missing method_name_mapping)
+                # for full_name, short_name in method_name_mapping.items():
+                #     if full_name in method_name:
+                #         method_name = short_name
+                #         break
                 
                 all_medians.append(median_val)
                 method_medians[method_name].append(median_val)
@@ -822,5 +822,5 @@ if __name__ == "__main__":
     print(f'Figure S10 Suzuki_Doyle saved to ./pngs/figure_S10_Suzuki_Doyle.png')
     print(f'Figure S10 Suzuki_Cernak saved to ./pngs/figure_S10_Suzuki_Cernak.png')
     print(f'Figure S10 Reductive_Amination saved to ./pngs/figure_S10_Reductive_Amination.png')
-    print(f'Figure S10 Alkylation_Deprotection saved to ./pngs/figure_S10_Alkylation_Deprotection.png')
+    print(f'Figure S10 amide_coupling_hte saved to ./pngs/figure_S10_amide_coupling_hte.png')
     print(f'Figure S10 Chan_Lam_Full saved to ./pngs/figure_S10_Chan_Lam_Full.png')
