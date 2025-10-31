@@ -389,8 +389,8 @@ def create_methods_vs_random_tables(results_df, save_path="./pngs/"):
         plt.savefig(filepath, dpi=300, bbox_inches='tight')
         print(f"Saved: {filepath}")
         
-        plt.show()
-        plt.close()
+        # plt.show()
+        # plt.close()
 
 def create_methods_vs_random_combined_figure(results_df, save_path="./pngs/"):
     """Create a single 3x2 subplot figure with tables showing methods vs random for each dataset"""

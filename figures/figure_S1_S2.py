@@ -182,8 +182,8 @@ def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     print(f"Saved: {filepath}")
     
-    plt.show()
-    plt.close()
+    # plt.show()
+    # plt.close()
 
 def create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matrix, 
                                 llm_names, bo_names, save_path):
@@ -235,8 +235,8 @@ def create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matr
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     print(f"Saved: {filepath}")
     
-    plt.show()
-    plt.close()
+    # plt.show()
+    # plt.close()
 
 if __name__ == "__main__":
     # Get run path from command line argument or user input

@@ -369,7 +369,7 @@ def create_individual_provider_invalid_plot(provider_name, provider_method_list,
     ax.spines['top'].set_visible(False)
     
     plt.tight_layout()
-    plt.show()
+    # plt.show()
     
     # Print summary statistics
     print(f"\n=== Invalid Suggestion Rates for {provider_name} ===")

@@ -384,7 +384,7 @@ def create_performance_comparison_plot(performance_data, with_paper=True, save_p
     filename = f'figure_S14_performance_{paper_status}.png'
     plt.savefig(os.path.join(save_path, filename), 
                 dpi=300, bbox_inches='tight')
-    plt.show()
+    # plt.show()
     
     return fig
 
@@ -470,7 +470,7 @@ def create_entropy_comparison_plot(entropy_data, with_paper=True, save_path="./p
     filename = f'figure_S14_entropy_{paper_status}.png'
     plt.savefig(os.path.join(save_path, filename), 
                 dpi=300, bbox_inches='tight')
-    plt.show()
+    # plt.show()
     
     return fig
 
@@ -624,7 +624,7 @@ def create_statistical_comparison_matrices(performance_data, with_paper=True, sa
         fig2.savefig(os.path.join(save_path, f'figure_S14_effect_sizes_{agg_method}_{paper_status}.png'), 
                     dpi=300, bbox_inches='tight')
         
-        plt.show()
+        # plt.show()
     
     print(f"Statistical matrix figures saved to {save_path}")
     return True

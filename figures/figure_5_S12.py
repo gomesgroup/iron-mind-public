@@ -835,7 +835,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
     ax.spines['top'].set_visible(False)
     
     plt.tight_layout()
-    plt.show()
+    # plt.show()
     
     # Print statistical results
     print(f"\n=== Statistical Analysis for {provider_name} ===")

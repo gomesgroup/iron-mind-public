@@ -218,7 +218,7 @@ def create_individual_provider_duplicate_plot(provider_name, provider_method_lis
     ax.spines['top'].set_visible(False)
 
     plt.tight_layout()
-    plt.show()
+    # plt.show()
 
     return fig, ax, provider_duplicate_data
 

@@ -81,11 +81,13 @@ python figure_3.py
 python figure_5_S12.py
 ...
 ```
+Some figure scripts require the path to the `runs/` directory, be sure to provide the absolute path, opposed to the relative path.
 
 To generate all figures:
 ```bash
 bash generate_all_figures.sh <path_to_runs>
 ```
+The `path_to_runs` must be an absolute path.
 
 Generated figures are saved to `figures/pngs/` directory.
 

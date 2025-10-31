@@ -18,13 +18,15 @@ from olympus.datasets.dataset import Dataset
 import importlib.util
 try:
     spec = importlib.util.spec_from_file_location("figure_7_S10", "figures/figure_7_S10.py")
+    figure_7 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(figure_7)
 except FileNotFoundError:
     spec = importlib.util.spec_from_file_location("figure_7_S10", "figure_7_S10.py")
+    figure_7 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(figure_7)
 except Exception as e:
     print(f"Error importing figure_7_S10: {e}")
     raise
-figure_7 = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(figure_7)
 
 def setup_data(run_path):
     """Setup path_dict and dataset_param_options similar to figure_7.py"""
@@ -689,7 +691,7 @@ def create_entropy_matrix_plots(p_value_matrices, effect_size_matrices, sorted_d
     print("  - './pngs/entropy_statistical_matrices_pvalues.png'")
     print("  - './pngs/entropy_statistical_matrices_effect_sizes.png'")
     
-    plt.show()
+    # plt.show()
     
     return fig1, fig2
 

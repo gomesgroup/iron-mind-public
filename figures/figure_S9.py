@@ -484,7 +484,7 @@ def create_entropy_performance_scatter_plots(correlation_data, save_path="./pngs
         # Save the plot
         filename = f'figure_S9_{dataset_key}.png'
         plt.savefig(os.path.join(save_path, filename), dpi=300, bbox_inches='tight')
-        plt.show()
+        # plt.show()
         
         print(f"Saved: {filename}")
 

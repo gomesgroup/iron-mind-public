@@ -353,7 +353,7 @@ def create_bootstrap_ci_figure(top_obs_data, save_path="./pngs/"):
     os.makedirs(save_path, exist_ok=True)
     plt.savefig(os.path.join(save_path, 'figure_S3.png'), 
                 dpi=300, bbox_inches='tight')
-    plt.show()
+    # plt.show()
     
     return fig
 

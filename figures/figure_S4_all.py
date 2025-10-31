@@ -573,7 +573,7 @@ def create_individual_provider_plot(provider_name, provider_method_list, remove_
     ax.spines['top'].set_visible(False)
     
     plt.tight_layout()
-    plt.show()
+    # plt.show()
     
     return fig, ax, provider_data
 

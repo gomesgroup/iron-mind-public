@@ -565,7 +565,7 @@ def create_time_to_best_plot(time_data, threshold_percent, save_path="./pngs/"):
             figure_prefix = 'figure_S5'
         plt.savefig(os.path.join(save_path, f'{figure_prefix}_{provider_name}.png'), 
                     dpi=300, bbox_inches='tight')
-        plt.show()
+        # plt.show()
     
     return fig
 

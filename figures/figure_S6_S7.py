@@ -18,15 +18,18 @@ from matplotlib.colors import ListedColormap
 
 # Import functions from figure_7_new.py and figure_5.py
 import importlib.util
+
 try:
     spec = importlib.util.spec_from_file_location("figure_7_S10", "figures/figure_7_S10.py")
+    figure_7 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(figure_7)
 except FileNotFoundError:
     spec = importlib.util.spec_from_file_location("figure_7_S10", "figure_7_S10.py")
+    figure_7 = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(figure_7)
 except Exception as e:
     print(f"Error importing figure_7_S10: {e}")
     raise
-figure_7 = importlib.util.module_from_spec(spec)
-spec.loader.exec_module(figure_7)
 
 from figure_5_S12 import perform_statistical_analysis
 
@@ -282,8 +285,8 @@ def create_individual_entropy_pvalue_plot(dataset_key, dataset_name_mapping, p_m
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     print(f"Saved: {filepath}")
     
-    plt.show()
-    plt.close()
+    # plt.show()
+    # plt.close()
 
 def create_individual_entropy_effect_plot(dataset_key, dataset_name_mapping, effect_matrix, 
                                         llm_names, bo_names, save_path):
@@ -335,8 +338,8 @@ def create_individual_entropy_effect_plot(dataset_key, dataset_name_mapping, eff
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     print(f"Saved: {filepath}")
     
-    plt.show()
-    plt.close()
+    # plt.show()
+    # plt.close()
 
 def main():
     if len(sys.argv) > 1:
