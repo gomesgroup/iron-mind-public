@@ -31,7 +31,7 @@ The repository works with six chemical reaction optimization datasets:
 - **N-Alkylation/Deprotection** - Two-step synthesis (yield optimization)
 - **Chan-Lam Coupling** - C-N coupling reactions (multi-objective: desired vs undesired yield)
 
-## Installation
+## Installation (should take less than 5 minutes)
 
 1. Clone this repository:
 ```bash
@@ -70,7 +70,7 @@ unzip runs.zip
 
 This will produce the `runs/` directory in your current working directory. Use this path when generating figures.
 
-## Figure Reproduction
+## Figure Reproduction (should take less than 5 minutes)
 
 Each figure script in the `figures/` directory can be run independently:
 
