@@ -118,6 +118,17 @@ if [ -n "$RUN_DATA_PATH" ]; then
     fi
     echo ""
 
+    # Figure 8 & S15 - Direct prediction analysis
+    echo -e "${YELLOW}Generating Figure 8 & S15 - Direct prediction analysis (~1 min)...${NC}"
+    python figure_8_S15.py "$RUN_DATA_PATH"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ Figure 8 & S15 completed${NC}"
+    else
+        echo -e "${RED}✗ Figure 8 & S15 failed${NC}"
+        exit 1
+    fi
+    echo ""
+
     # Figure S6 & S7 - Dataset analysis
     echo -e "${YELLOW}Generating Figures S6 & S7 - Dataset analysis...${NC}"
     python figure_S6_S7.py "$RUN_DATA_PATH"
@@ -216,6 +227,17 @@ if [ -n "$RUN_DATA_PATH" ]; then
         exit 1
     fi
     echo ""
+
+    # Figure S16 - Permutation label leakage heatmap
+    echo -e "${YELLOW}Generating Figure S16 - Permutation label leakage heatmap...${NC}"
+    python figure_S16.py "$RUN_DATA_PATH"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ Figure S16 completed${NC}"
+    else
+        echo -e "${RED}✗ Figure S16 failed${NC}"
+        exit 1
+    fi
+    echo ""
 else
     echo -e "${YELLOW}No run data path provided. Skipping figures that require run data:${NC}"
     echo "  - Figure 5 & S12 (LLM optimization performance)"
@@ -228,6 +250,7 @@ else
     echo "  - Figure S9 (Parameter analysis)"
     echo "  - Figure S11 (Additional convergence analysis)"
     echo "  - Figure S13 (Comprehensive analysis)"
+    echo "  - Figure S16 (Permutation label leakage)"
     echo ""
     echo -e "${BLUE}To generate all figures, run: $0 /path/to/run/data${NC}"
     echo ""

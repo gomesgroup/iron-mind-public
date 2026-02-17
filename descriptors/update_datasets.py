@@ -124,7 +124,8 @@ if __name__ == "__main__":
         "Suzuki_Doyle",
         "Suzuki_Cernak",
         "Chan_Lam_Full",
-        "Reductive_Amination"
+        "Reductive_Amination",
+        "amide_coupling_hte"
     ]
     use_smiles_mappings = [
         True,
@@ -132,6 +133,7 @@ if __name__ == "__main__":
         False,
         True,
         False,
+        True,
         True
     ]
     decorrelation_threshold = None  # Use dynamic thresholds

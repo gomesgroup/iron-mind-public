@@ -3,3 +3,10 @@ __pycache__/
 **/pngs/
 runs/
 runs.zip
+*.ipynb
+figures/*
+!figures/figure_*.py
+figures/figure_S98.py
+figures/figure_S99.py
+figures/figure_scarcity.py
+smiles_mappings/
