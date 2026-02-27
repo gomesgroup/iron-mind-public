@@ -98,7 +98,11 @@ def match_predictions(predictions_df, original_df, dataset_name):
         actual = compute_objective(matched.iloc[0], dataset_name)
 
         if len(pred_obj_cols) == 1:
-            predicted = float(row[pred_obj_cols[0]])
+            try:
+                predicted = float(row[pred_obj_cols[0]])
+            except Exception as e:
+                predicted = np.nan
+                print(f"  ERROR: {e}, setting predicted to NaN")
         else:
             config = dataset_to_obj[dataset_name]
             obj_vals = []
@@ -259,10 +263,13 @@ def discover_and_plot(run_path):
                 model_name = config.get('model', entry)
             else:
                 model_name = entry
-
+                
             predictions_df = pd.read_csv(predictions_path)
             original_df = pd.read_csv(original_path)
-            actuals, predicteds = match_predictions(predictions_df, original_df, dataset_name)
+            try:
+                actuals, predicteds = match_predictions(predictions_df, original_df, dataset_name)
+            except Exception as e:
+                raise ValueError(f"Error matching predictions for {model_name}/{dataset_name}: {e}")
 
             if len(actuals) < 2:
                 print(f"  Skipping {model_name}/{dataset_name}: only {len(actuals)} matches")
