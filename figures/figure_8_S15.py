@@ -1,5 +1,5 @@
 import pandas as pd
-import json, os, sys
+import json, os, sys, re
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
@@ -50,6 +50,20 @@ dataset_display_name = {
 
 # Subplot positions: maps dataset_name (lowercase) to (row, col) in 2x3 grid
 dataset_to_pos = {ds: (i // 3, i % 3) for i, ds in enumerate(dataset_order)}
+
+
+def normalize_model_name(name):
+    """Normalize model name to handle naming inconsistencies across runs.
+
+    Handles:
+      - claude-4-sonnet vs claude-sonnet-4 (word order)
+      - -medium vs -thinking (extended thinking suffix)
+      - gemini -preview-XX-XX version suffixes
+    """
+    name = re.sub(r'claude-4-sonnet', 'claude-sonnet-4', name)
+    name = name.replace('-medium', '-thinking')
+    name = re.sub(r'-preview-\d{2}-\d{2}', '', name)
+    return name
 
 
 def get_obj_columns(dataset_name):
@@ -178,7 +192,9 @@ def plot_r2_heatmap(r2_matrix):
     im = ax.imshow(matrix, cmap=cmap, aspect='auto', vmin=-abs_max, vmax=abs_max)
 
     # X-axis: models (use linebreaks for long names)
-    x_labels = [m.replace('/', '\n').replace('-', '-\n', 1) if len(m) > 15 else m for m in model_names]
+    # Strip date suffixes (e.g., -20250514) for cleaner labels
+    display_names = [re.sub(r'-\d{8}', '', m) for m in model_names]
+    x_labels = [m.replace('/', '\n').replace('-', '-\n', 1) if len(m) > 15 else m for m in display_names]
     ax.set_xticks(range(len(model_names)))
     ax.set_xticklabels(x_labels, fontsize=12, ha='center')
 
@@ -253,16 +269,17 @@ def discover_and_plot(run_path):
 
             predictions_path = os.path.join(run_dir, 'predictions.csv')
             original_path = os.path.join(run_dir, 'original_data.csv')
-            config_path = os.path.join(run_dir, 'config.json')
             if not os.path.exists(predictions_path) or not os.path.exists(original_path):
                 continue
 
-            if os.path.exists(config_path):
-                with open(config_path) as f:
-                    config = json.load(f)
-                model_name = config.get('model', entry)
-            else:
-                model_name = entry
+            # Derive model name from directory, normalizing naming inconsistencies
+            # (config.json loses the -medium suffix, causing collisions)
+            model_name = normalize_model_name(
+                re.sub(r'-\d+-direct-predict$', '', entry))
+
+            # Skip Claude 4.6 models (opus, sonnet 4.6)
+            if '4-6' in model_name:
+                continue
                 
             predictions_df = pd.read_csv(predictions_path)
             original_df = pd.read_csv(original_path)

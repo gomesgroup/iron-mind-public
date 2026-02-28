@@ -46,6 +46,20 @@ def strip_run_config(name):
     return re.sub(r'-\d+-\d+-\d+$', '', name)
 
 
+def normalize_model_name(name):
+    """Normalize model name to handle naming inconsistencies across runs.
+
+    Handles:
+      - claude-4-sonnet vs claude-sonnet-4 (word order)
+      - -medium vs -thinking (extended thinking suffix)
+      - gemini -preview-XX-XX version suffixes
+    """
+    name = re.sub(r'claude-4-sonnet', 'claude-sonnet-4', name)
+    name = name.replace('-medium', '-thinking')
+    name = re.sub(r'-preview-\d{2}-\d{2}', '', name)
+    return name
+
+
 def cliffs_delta(x, y):
     n1, n2 = len(x), len(y)
     if n1 == 0 or n2 == 0:
@@ -280,30 +294,25 @@ def discover_and_plot(run_path):
             if not os.path.isdir(permuted_dir):
                 continue
 
-            # Clean model name: strip permuted-labels tag first (it's at the end),
-            # then strip run config suffix
-            # e.g. "claude-3-7-sonnet-latest-1-20-20-permuted-labels" -> "claude-3-7-sonnet-latest"
-            model_name = strip_run_config(entry.replace('-permuted-labels', ''))
+            # Clean model name: strip permuted-labels tag, run config suffix,
+            # then normalize naming inconsistencies
+            # e.g. "claude-4-sonnet-20250514-medium-1-20-20-permuted-labels"
+            #    -> "claude-sonnet-4-20250514-thinking"
+            model_name = normalize_model_name(
+                strip_run_config(entry.replace('-permuted-labels', '')))
 
-            # Fuzzy match: find original run whose stripped name matches
-            # First try exact match, then prefix match for version suffixes
-            # (e.g. gemini-2.5-flash-lite matches gemini-2.5-flash-lite-preview-06-17)
+            # Match to original (non-permuted) run using normalized names
             original_dir = None
-            prefix_candidate = None
             for bm_entry in os.listdir(dataset_dir):
                 if 'permuted' in bm_entry or 'direct-predict' in bm_entry:
                     continue
                 candidate = os.path.join(dataset_dir, bm_entry)
                 if not os.path.isdir(candidate):
                     continue
-                orig_name = strip_run_config(bm_entry)
+                orig_name = normalize_model_name(strip_run_config(bm_entry))
                 if orig_name == model_name:
                     original_dir = candidate
                     break
-                if prefix_candidate is None and orig_name.startswith(model_name + '-'):
-                    prefix_candidate = candidate
-            if original_dir is None:
-                original_dir = prefix_candidate
 
             print(f'Loading: {model_name} / {dataset_name}')
             data = gather_dataset_data(permuted_dir, dataset_name, original_dir)
@@ -357,8 +366,10 @@ def discover_and_plot(run_path):
         'leakage', ['#d55e00', '#f5f5f5', '#0071b2'], N=256)
     im = ax.imshow(matrix, cmap=cmap, aspect='auto', vmin=-abs_max, vmax=abs_max)
 
+    # Strip date suffixes (e.g., -20250514) for cleaner labels
+    display_names = [re.sub(r'-\d{8}', '', m) for m in model_names]
     x_labels = [m.replace('/', '\n').replace('-', '-\n', 1) if len(m) > 15 else m
-                for m in model_names]
+                for m in display_names]
     ax.set_xticks(range(len(model_names)))
     ax.set_xticklabels(x_labels, fontsize=12, ha='center')
 
