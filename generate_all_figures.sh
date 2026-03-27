@@ -228,6 +228,18 @@ if [ -n "$RUN_DATA_PATH" ]; then
     fi
     echo ""
 
+    # Figure S14 - Alternative Analysis for Chan-Lam
+    echo -e "${YELLOW}Generating Figure S14 - Alternative Analysis for Chan-Lam...${NC}"
+    python figure_S14.py "$RUN_DATA_PATH"
+    python figure_S14E.py "$RUN_DATA_PATH"
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}✓ Figure S14 completed${NC}"
+    else
+        echo -e "${RED}✗ Figure S14 failed${NC}"
+        exit 1
+    fi
+    echo ""
+
     # Figure S16 - Permutation label leakage heatmap
     echo -e "${YELLOW}Generating Figure S16 - Permutation label leakage heatmap...${NC}"
     python figure_S16.py "$RUN_DATA_PATH"
