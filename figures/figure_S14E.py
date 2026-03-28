@@ -48,13 +48,13 @@ AGG_COLORS   = {
     'max':  '#d7191c',   # red        – best case
 }
 AGG_LABELS = {
-    'min':  'Min (worst case)',
+    'min':  'Lower bound',
     'mean': 'Mean',
-    'max':  'Max (best case)',
+    'max':  'Upper bound',
 }
 
 # Method ordering for x-axis (LLM first, then BO)
-LLM_ORDER = ['claude-sonnet-4', 'gpt-5']
+LLM_ORDER = ['claude-sonnet-4', 'gemini-2.5-pro', 'gpt-5']
 BO_ORDER   = ['atlas-ei', 'atlas-ei-des', 'atlas-pi', 'atlas-pi-des',
                'atlas-ucb', 'atlas-ucb-des']
 
