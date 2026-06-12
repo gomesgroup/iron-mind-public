@@ -71,6 +71,11 @@ model_to_provider = {
     ],
     "Random": [
         'random',
+    ],
+    "Atlas (DKL)": [
+        "atlas-ei-dkl",
+        "atlas-ucb-dkl",
+        "atlas-pi-dkl"
     ]
 }
 
@@ -881,8 +886,12 @@ if __name__ == "__main__":
         if os.path.exists(bo_path):
             bo_paths = [os.path.join(bo_path, path) for path in os.listdir(bo_path)]
             for path in bo_paths:
-                if path.endswith('-20') or path.endswith('-20-des0'):
-                    track_data, run_dirs = get_tracks(path, dataset_name, bo=True, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
+                if path.endswith('-20') or path.endswith('-20-des0') or path.endswith('-dkl'):
+                    try:
+                        track_data, run_dirs = get_tracks(path, dataset_name, bo=True, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
+                    except Exception as e:
+                        print(f'{path} - {e}')
+                        continue
                     if track_data is not None:
                         path_dict[dataset_name][path] = track_data
                         path_dict_with_run_paths[dataset_name][path] = {}
