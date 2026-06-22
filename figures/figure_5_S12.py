@@ -74,8 +74,11 @@ model_to_provider = {
     ],
     "Atlas (DKL)": [
         "atlas-ei-dkl",
+        "atlas-ei-des-dkl",
         "atlas-ucb-dkl",
-        "atlas-pi-dkl"
+        "atlas-ucb-des-dkl",
+        "atlas-pi-dkl",
+        "atlas-pi-des-dkl",
     ]
 }
 
@@ -886,7 +889,7 @@ if __name__ == "__main__":
         if os.path.exists(bo_path):
             bo_paths = [os.path.join(bo_path, path) for path in os.listdir(bo_path)]
             for path in bo_paths:
-                if path.endswith('-20') or path.endswith('-20-des0') or path.endswith('-dkl'):
+                if path.endswith('-20') or path.endswith('-20-des0') or path.endswith('-dkl') or path.endswith('-20-des0-dkl'):
                     try:
                         track_data, run_dirs = get_tracks(path, dataset_name, bo=True, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
                     except Exception as e:
@@ -989,7 +992,9 @@ if __name__ == "__main__":
         # Save the figure to ./pngs/figure_5_{provider_name}.png
         os.makedirs('./pngs', exist_ok=True)
         if provider_name == 'Random':
-            figure_prefix = 'figure_S12'
+            figure_prefix = 'figure_S12A'
+        elif provider_name == 'Atlas (DKL)':
+            figure_prefix = 'figure_S12B'
         else:
             figure_prefix = 'figure_5'
         plt.savefig(f'./pngs/{figure_prefix}_{provider_name}.png', dpi=300, bbox_inches='tight')
@@ -1103,6 +1108,7 @@ if __name__ == "__main__":
     print(f'Figure 5 OpenAI saved to ./pngs/figure_5_OpenAI.png')
     print(f'Figure 5 Atlas saved to ./pngs/figure_5_Atlas.png')
     
-    print(f'Figure S12 Random saved to ./pngs/figure_S12_Random.png')
+    print(f'Figure S12A Random saved to ./pngs/figure_S12A_Random.png')
+    print(f'Figure S12B Atlas (DKL) saved to ./pngs/figure_S12B_Atlas (DKL).png')
 
     
