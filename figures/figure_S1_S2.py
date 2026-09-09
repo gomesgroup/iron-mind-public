@@ -14,8 +14,13 @@ from figure_5_S12 import (
     find_best_llm_vs_best_bo_per_dataset
 )
 
-def create_individual_statistical_matrices(top_obs_data, save_path="./pngs/individual/"):
-    """Create individual statistical comparison matrices for each dataset"""
+def create_individual_statistical_matrices(top_obs_data, save_path="./pngs/individual/", bo_provider='Atlas', file_suffix=''):
+    """Create individual statistical comparison matrices for each dataset.
+
+    bo_provider selects which model_to_provider group is treated as "BO" (e.g. 'Atlas'
+    for vanilla BO methods, 'Atlas (DKL)' for the DKL variants), and file_suffix is
+    appended to the output filenames so the two comparisons are saved separately.
+    """
     
     # Apply same method filtering as figure_5.py
     filtered_top_obs_data = {}
@@ -71,9 +76,9 @@ def create_individual_statistical_matrices(top_obs_data, save_path="./pngs/indiv
             method_name = method_name.replace('-20250805', '')
             
             # Classify as LLM or BO
-            is_llm = any(method_name in provider_methods for provider, provider_methods in model_to_provider.items() 
+            is_llm = any(method_name in provider_methods for provider, provider_methods in model_to_provider.items()
                         if provider in ['Anthropic', 'Google', 'OpenAI'])
-            is_bo = method_name in model_to_provider['Atlas']
+            is_bo = method_name in model_to_provider[bo_provider]
             
             if is_llm:
                 llm_methods[method_name] = method_info['top_obs']
@@ -102,13 +107,13 @@ def create_individual_statistical_matrices(top_obs_data, save_path="./pngs/indiv
                 effect_matrix[i, j] = effect_size if effect_size is not None else 0.0
         
         # Create individual plots for this dataset
-        create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix, 
-                                     llm_names, bo_names, save_path)
-        create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matrix, 
-                                     llm_names, bo_names, save_path)
+        create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
+                                     llm_names, bo_names, save_path, file_suffix)
+        create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matrix,
+                                     llm_names, bo_names, save_path, file_suffix)
 
-def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix, 
-                                llm_names, bo_names, save_path):
+def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
+                                llm_names, bo_names, save_path, file_suffix=''):
     """Create individual p-value plot for a single dataset"""
     
     # Get clean display name
@@ -156,7 +161,8 @@ def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
             ax.text(j, i, text, ha='center', va='center', 
                    fontsize=12, fontweight='bold', color=text_color)
     
-    ax.set_title(f'{display_name} - Statistical Significance (Wilcoxon Test)', 
+    title_suffix = ' - DKL' if file_suffix else ''
+    ax.set_title(f'{display_name} - Statistical Significance (Wilcoxon Test){title_suffix}',
                 fontsize=16, fontweight='bold', pad=20)
     ax.set_xticks(range(len(bo_names)))
     ax.set_yticks(range(len(llm_names)))
@@ -164,20 +170,20 @@ def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
     ax.set_yticklabels(llm_names, fontsize=12)
     ax.set_xlabel('BO Methods', fontweight='bold', fontsize=14)
     ax.set_ylabel('LLM Methods', fontweight='bold', fontsize=14)
-    
+
     # Add colorbar
     cbar = plt.colorbar(im, ax=ax, orientation='vertical', fraction=0.046, pad=0.04)
     cbar.set_label('Significance Level', fontweight='bold', fontsize=12)
     cbar.set_ticks([0, 1, 2, 3])
     cbar.set_ticklabels(['p≥0.05 (ns)', 'p<0.05 (*)', 'p<0.01 (**)', 'p<0.001 (***)'])
-    
+
     # Adjust layout
     plt.tight_layout()
-    
+
     # Save figure
     os.makedirs(save_path, exist_ok=True)
     safe_dataset_name = dataset_key.replace('_', '-')
-    filename = f'figure_S1_{safe_dataset_name}.png'
+    filename = f'figure_S1{file_suffix}_{safe_dataset_name}.png'
     filepath = os.path.join(save_path, filename)
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     print(f"Saved: {filepath}")
@@ -185,8 +191,8 @@ def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
     # plt.show()
     # plt.close()
 
-def create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matrix, 
-                                llm_names, bo_names, save_path):
+def create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matrix,
+                                llm_names, bo_names, save_path, file_suffix=''):
     """Create individual effect size plot for a single dataset"""
     
     # Get clean display name
@@ -211,7 +217,8 @@ def create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matr
             ax.text(j, i, text, ha='center', va='center', 
                    fontsize=12, fontweight='bold', color=text_color)
     
-    ax.set_title(f'{display_name} - Effect Sizes (Cliff\'s δ)', 
+    title_suffix = ' - DKL' if file_suffix else ''
+    ax.set_title(f'{display_name} - Effect Sizes (Cliff\'s δ){title_suffix}',
                 fontsize=16, fontweight='bold', pad=20)
     ax.set_xticks(range(len(bo_names)))
     ax.set_yticks(range(len(llm_names)))
@@ -219,18 +226,18 @@ def create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matr
     ax.set_yticklabels(llm_names, fontsize=12)
     ax.set_xlabel('BO Methods', fontweight='bold', fontsize=14)
     ax.set_ylabel('LLM Methods', fontweight='bold', fontsize=14)
-    
+
     # Add colorbar
     cbar = plt.colorbar(im, ax=ax, orientation='vertical', fraction=0.046, pad=0.04)
     cbar.set_label('Cliff\'s δ (LLM advantage →)', fontweight='bold', fontsize=12)
-    
+
     # Adjust layout
     plt.tight_layout()
-    
+
     # Save figure
     os.makedirs(save_path, exist_ok=True)
     safe_dataset_name = dataset_key.replace('_', '-')
-    filename = f'figure_S2_{safe_dataset_name}.png'
+    filename = f'figure_S2{file_suffix}_{safe_dataset_name}.png'
     filepath = os.path.join(save_path, filename)
     plt.savefig(filepath, dpi=300, bbox_inches='tight')
     print(f"Saved: {filepath}")
@@ -264,8 +271,12 @@ if __name__ == "__main__":
         if os.path.exists(bo_path):
             bo_paths = [os.path.join(bo_path, path) for path in os.listdir(bo_path)]
             for path in bo_paths:
-                if path.endswith('-20') or path.endswith('-20-des0'):
-                    track_data, run_dirs = get_tracks(path, dataset_name, bo=True, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
+                if path.endswith('-20') or path.endswith('-20-des0') or path.endswith('-dkl') or path.endswith('-20-des0-dkl'):
+                    try:
+                        track_data, run_dirs = get_tracks(path, dataset_name, bo=True, n_tracks=n_tracks, track_size=track_size, return_rundir=True)
+                    except Exception as e:
+                        print(f'{path} - {e}')
+                        continue
                     if track_data is not None:
                         path_dict[dataset_name][path] = track_data
         
@@ -304,7 +315,9 @@ if __name__ == "__main__":
     top_obs_data = {k: top_obs_data[k] for k in sorted_dataset_names}
     
     print("Creating individual statistical matrices (separate p-values and effect sizes)...")
-    create_individual_statistical_matrices(top_obs_data, save_path="./pngs/")
+    create_individual_statistical_matrices(top_obs_data, save_path="./pngs/", bo_provider='Atlas', file_suffix='')
+    print("Creating DKL statistical matrices (LLM vs Atlas+DKL)...")
+    create_individual_statistical_matrices(top_obs_data, save_path="./pngs/", bo_provider='Atlas (DKL)', file_suffix='_DKL')
     print("Individual p-value and effect size matrices saved to './pngs/'")
     
     print("\nAll individual figures have been generated successfully!")
