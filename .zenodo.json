@@ -1,0 +1,18 @@
+{
+  "title": "Iron Mind: code and data for LLM-guided optimization of chemical reactions",
+  "upload_type": "software",
+  "description": "Code, benchmark datasets and optimization campaign data for the paper \"Elevating large language models beyond traditional chemical reaction optimizers\".",
+  "creators": [
+    {"name": "MacKnight, Robert", "affiliation": "Carnegie Mellon University", "orcid": "0009-0008-2305-1309"},
+    {"name": "Gomes, Gabe", "affiliation": "Carnegie Mellon University"},
+    {"name": "Baldwin, Luke", "affiliation": "United States Air Force Research Laboratory"},
+    {"name": "Ethier, Jeffrey", "affiliation": "United States Air Force Research Laboratory"}
+  ],
+  "license": "mit",
+  "access_right": "open",
+  "keywords": ["optimization", "chemistry", "LLMs", "Bayesian Optimization"],
+  "grants": [
+    {"id": "10.13039/100000001::2202693"},
+    {"id": "011e9bt93::FA8650-19-2-5209"}
+  ]
+}
