@@ -123,7 +123,7 @@ def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
     fig, ax = plt.subplots(1, 1, figsize=(12, 8))
     
     # Create custom colormap for p-values
-    colors = ['#d73027', '#fee08b', '#abdda4', '#2b83ba']  # Red, Light Yellow, Light Green, Dark Blue
+    colors = ['#D55E00', '#F0E442', '#56B4E9', '#0072B2']
     p_cmap = ListedColormap(colors)
     
     p_colors = np.zeros_like(p_matrix)
@@ -149,13 +149,13 @@ def create_individual_pvalue_plot(dataset_key, dataset_name_mapping, p_matrix,
             
             # Adaptive text color based on background
             color_value = p_colors[i, j]
-            if color_value == 0:  # Red background
+            if color_value == 0:  # Orange-red background
                 text_color = 'white'
-            elif color_value == 1:  # Light yellow background  
+            elif color_value == 1:  # Yellow background
                 text_color = 'black'
-            elif color_value == 2:  # Medium green background
-                text_color = 'black'
-            else:  # Dark blue background (color_value == 3)
+            elif color_value == 2:  # Teal background
+                text_color = 'white'
+            else:  # Blue background (color_value == 3)
                 text_color = 'white'
             
             ax.text(j, i, text, ha='center', va='center', 
@@ -203,7 +203,7 @@ def create_individual_effect_plot(dataset_key, dataset_name_mapping, effect_matr
     
     # Use diverging colormap for effect sizes (centered at 0)
     vmax = max(abs(effect_matrix.min()), abs(effect_matrix.max())) if effect_matrix.size > 0 else 1
-    im = ax.imshow(effect_matrix, cmap='RdBu_r', aspect='auto', 
+    im = ax.imshow(effect_matrix, cmap='PuOr_r', aspect='auto', 
                   vmin=-vmax, vmax=vmax)
     
     # Add effect size text annotations

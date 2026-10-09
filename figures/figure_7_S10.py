@@ -332,17 +332,17 @@ def create_individual_provider_entropy_plot(provider_name, provider_method_list,
                     
                     for box in boxplot['boxes']:
                         box.set(color='black', linewidth=2, zorder=3)
-                        box.set(facecolor=dataset_to_color[dataset_name.lower()], alpha=0.8, zorder=1)
-                    
+                        box.set(facecolor=dataset_to_color[dataset_name.lower()], zorder=1)
+
                     for whisker in boxplot['whiskers']:
                         whisker.set(color='black', linewidth=2, zorder=1)
-                    
+
                     for cap in boxplot['caps']:
                         cap.set(color='black', linewidth=2, zorder=1)
-                    
+
                     for flier in boxplot['fliers']:
                         flier.set(marker='o', markerfacecolor=dataset_to_color[dataset_name.lower()],
-                                markeredgecolor='black', markersize=8, alpha=0.8)
+                                markeredgecolor='black', markersize=8)
                     
                     offset += 0.45
     

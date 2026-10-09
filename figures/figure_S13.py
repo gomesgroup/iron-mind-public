@@ -288,39 +288,30 @@ def create_methods_vs_random_tables(results_df, save_path="./pngs/"):
                     # Color p-value based on significance
                     if row['P_Value'] is not None:
                         if row['P_Value'] < 0.001:
-                            p_color = '#2b83ba'  # Dark blue (highly significant)
-                            p_text_color = 'white'
+                            p_color, p_text_color = '#0072B2', 'white'
                         elif row['P_Value'] < 0.01:
-                            p_color = '#abdda4'  # Medium green
-                            p_text_color = 'black'
+                            p_color, p_text_color = '#009E73', 'white'
                         elif row['P_Value'] < 0.05:
-                            p_color = '#fee08b'  # Light yellow
-                            p_text_color = 'black'
+                            p_color, p_text_color = '#F0E442', 'black'
                         else:
-                            p_color = '#d73027'  # Red (not significant)
-                            p_text_color = 'white'
-                        
+                            p_color, p_text_color = '#D55E00', 'white'
+                                                
                         cellDict[(row_idx, 2)].set_facecolor(p_color)
                         cellDict[(row_idx, 2)].set_text_props(color=p_text_color, weight='bold')
                     
                     # Color effect size based on magnitude and direction
                     if row['Effect_Size'] is not None:
                         effect_val = row['Effect_Size']
-                        if effect_val > 0.474:  # Large positive effect
-                            effect_color = '#1a9850'  # Dark green
-                            effect_text_color = 'white'
-                        elif effect_val > 0.33:  # Medium positive effect
-                            effect_color = '#91bfdb'  # Light blue
-                            effect_text_color = 'black'
-                        elif effect_val > 0.147:  # Small positive effect
-                            effect_color = '#e6f5d0'  # Very light green
-                            effect_text_color = 'black'
-                        elif effect_val > -0.147:  # Negligible effect
-                            effect_color = '#f7f7f7'  # Light gray
-                            effect_text_color = 'black'
-                        else:  # Negative effect (worse than random)
-                            effect_color = '#fc8d59'  # Orange
-                            effect_text_color = 'black'
+                        if effect_val > 0.474:
+                            effect_color, effect_text_color = '#0072B2', 'white'
+                        elif effect_val > 0.33:
+                            effect_color, effect_text_color = '#56B4E9', 'black'
+                        elif effect_val > 0.147:
+                            effect_color, effect_text_color = '#CFE8F7', 'black'
+                        elif effect_val > -0.147:
+                            effect_color, effect_text_color = '#f7f7f7', 'black'
+                        else:
+                            effect_color, effect_text_color = '#fc8d59', 'black'
                         
                         cellDict[(row_idx, 3)].set_facecolor(effect_color)
                         cellDict[(row_idx, 3)].set_text_props(color=effect_text_color, weight='bold')

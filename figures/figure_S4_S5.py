@@ -420,13 +420,12 @@ def create_time_to_best_plot(time_data, threshold_percent, save_path="./pngs/"):
                     if len(method_data['times']) == 1:
                         # Plot single point as a circle (like an outlier)
                         ax.scatter(
-                            [position + offset], 
-                            method_data['times'], 
-                            marker='o', 
+                            [position + offset],
+                            method_data['times'],
+                            marker='o',
                             facecolor=dataset_to_color[dataset_key],
-                            edgecolor='black', 
+                            edgecolor='black',
                             s=64,  # markersize=8 equivalent
-                            alpha=0.8,
                             zorder=3
                         )
                     else:
@@ -443,11 +442,11 @@ def create_time_to_best_plot(time_data, threshold_percent, save_path="./pngs/"):
                         # Customize boxplot appearance
                         for box in boxplot['boxes']:
                             box.set(color='black', linewidth=2, zorder=3)
-                            box.set(facecolor=dataset_to_color[dataset_key], alpha=0.8, zorder=1)
-                        
+                            box.set(facecolor=dataset_to_color[dataset_key], zorder=1)
+
                         for whisker in boxplot['whiskers']:
                             whisker.set(color='black', linewidth=2, zorder=1)
-                        
+
                         for cap in boxplot['caps']:
                             cap.set(color='black', linewidth=2, zorder=1)
                         
@@ -462,7 +461,7 @@ def create_time_to_best_plot(time_data, threshold_percent, save_path="./pngs/"):
                         
                         for flier in boxplot['fliers']:
                             flier.set(marker='o', markerfacecolor=dataset_to_color[dataset_key],
-                                    markeredgecolor='black', markersize=8, alpha=0.8)
+                                    markeredgecolor='black', markersize=8)
                 else:
                     # No data available - plot a black X at y=20
                     ax.scatter(

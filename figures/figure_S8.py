@@ -221,28 +221,28 @@ def create_entropy_bootstrap_ci_table(entropy_data):
     return df
 
 def create_entropy_bootstrap_ci_figure(entropy_data):
-    """Create a 3x2 subplot figure with tables showing entropy bootstrap CIs for each dataset"""
-    
+    """Create one standalone figure per dataset, each with a table of entropy bootstrap CIs"""
+
     # Get the CI data
     ci_df = create_entropy_bootstrap_ci_table(entropy_data)
-    
+
     if len(ci_df) == 0:
         print("No data available for entropy bootstrap CI figure")
-        return None
-    
+        return []
+
     # Set font
     plt.rcParams['font.family'] = 'SF Pro Display'
-    
+
     # Dataset name mapping for clean display
     dataset_name_mapping = {
         'suzuki_doyle': 'Suzuki Yield',
-        'suzuki_cernak': 'Suzuki Conversion', 
+        'suzuki_cernak': 'Suzuki Conversion',
         'chan_lam_full': 'Chan-Lam',
         'buchwald_hartwig': 'Buchwald-Hartwig',
         'reductive_amination': 'Reductive Amination',
         'amide_coupling_hte': 'Amide Coupling HTE'
     }
-    
+
     # Sort datasets by color order (same as performance figures)
     dataset_to_color = {
         'buchwald_hartwig': '#3a0f5c',
@@ -252,166 +252,172 @@ def create_entropy_bootstrap_ci_figure(entropy_data):
         'amide_coupling_hte': '#febb80',
         'suzuki_cernak': '#d3426d'
     }
-    
-    sorted_dataset_names = sorted(dataset_to_color.keys(), 
-                                 key=lambda x: list(dataset_to_color.values()).index(dataset_to_color[x]), 
+
+    sorted_dataset_names = sorted(dataset_to_color.keys(),
+                                 key=lambda x: list(dataset_to_color.values()).index(dataset_to_color[x]),
                                  reverse=True)
-    
-    # Create 3x2 subplot figure (same layout as bootstrap_confidence_intervals.png)
-    fig, axes = plt.subplots(2, 3, figsize=(20, 12))
-    axes_flat = axes.flatten()
-    
-    for idx, dataset_key in enumerate(sorted_dataset_names):
-        if idx >= 6:  # Only handle first 6 datasets
-            break
-            
-        ax = axes_flat[idx]
-        ax.axis('off')  # Turn off axis for table
-        
-        display_name = dataset_name_mapping.get(dataset_key, dataset_key.replace('_', ' ').title())
-        dataset_name = dataset_key.replace('_', ' ').title()
-        dataset_data = ci_df[ci_df['Dataset'] == dataset_name]
-        
-        if len(dataset_data) == 0:
-            ax.text(0.5, 0.5, f'No entropy data for {dataset_name}', 
-                   ha='center', va='center', fontsize=12, transform=ax.transAxes)
-            continue
-        
-        # Prepare table data (exactly like statistical_summary_table.py)
+
+    os.makedirs('./pngs', exist_ok=True)
+    left_providers = ['Anthropic', 'Google']
+    right_providers = ['OpenAI', 'Atlas']
+    figs = []
+
+    def render_provider_table(ax, dataset_data, providers):
+        """Build and style a CI table restricted to the given providers on ax."""
         table_data = []
-        
-        # Group by provider for better organization
-        providers = ['Anthropic', 'Google', 'OpenAI', 'Atlas']
-        
         for provider in providers:
             provider_data = dataset_data[dataset_data['Provider'] == provider]
             if len(provider_data) == 0:
                 continue
-                
+
             # Add provider header row
             table_data.append([f'{provider}', '', '', ''])
-            
+
             # Add methods for this provider
             for _, row in provider_data.iterrows():
                 method_name = row['Method']
-                
                 table_data.append([
                     f'  {method_name}',  # Indent method names
                     f"{row['Median']}",  # No % for entropy
                     f"{row['CI_Lower']}",
                     f"{row['CI_Upper']}"
                 ])
-        
-        # Create table (exactly like statistical_summary_table.py)
-        if table_data:
-            table = ax.table(
-                cellText=table_data,
-                colLabels=['Method', 'Median', 'CI Lower', 'CI Upper'],
-                cellLoc='left',
-                loc='center',
-                bbox=[0, 0, 1, 1]
-            )
-            
-            # Style the table (exactly like statistical_summary_table.py)
-            table.auto_set_font_size(False)
-            table.set_fontsize(9)
-            table.scale(1, 1.5)
-            
-            # Adjust column widths - make method column wider, CI columns narrower
-            cellDict = table.get_celld()
-            for i in range(len(table_data) + 1):  # +1 for header row
-                # Method column (wider)
-                cellDict[(i, 0)].set_width(0.5)
-                # Median column 
-                cellDict[(i, 1)].set_width(0.18)
-                # CI Lower column (narrower)
-                cellDict[(i, 2)].set_width(0.16)
-                # CI Upper column (narrower)  
-                cellDict[(i, 3)].set_width(0.16)
-            
-            # Apply systematic color coding to entropy values (0-1 range)
-            def get_color_for_entropy(value_str):
-                """Convert entropy string to color - blue (0) to red (1)"""
-                try:
-                    # Extract numeric value from string
-                    value = float(value_str)
-                    # Clamp value between 0 and 1
-                    value = max(0, min(1, value))
-                    # Create color gradient: blue (0) to red (1)
-                    # Blue component decreases as value increases
-                    blue = (1 - value)
-                    # Red component increases as value increases  
-                    red = value
-                    # Keep green low for better contrast
-                    green = 0.1
-                    return (red, green, blue)
-                except:
-                    return (0, 0, 0)  # Black for invalid values
-            
-            # Apply colors to data rows (skip header row and provider rows)
-            row_idx = 1
-            for provider in providers:
-                provider_data_subset = dataset_data[dataset_data['Provider'] == provider]
-                if len(provider_data_subset) == 0:
-                    continue
-                
-                # Skip provider header row
+
+        ax.axis('off')  # Turn off axis for table
+        if not table_data:
+            return
+
+        table = ax.table(
+            cellText=table_data,
+            colLabels=['Method', 'Median', 'CI Lower', 'CI Upper'],
+            cellLoc='left',
+            loc='center',
+            bbox=[0, 0, 1, 1]
+        )
+
+        # Style the table (exactly like statistical_summary_table.py)
+        table.auto_set_font_size(False)
+        table.set_fontsize(22)
+        table.scale(1, 2.3)
+
+        # Adjust column widths - make method column wider, CI columns narrower
+        cellDict = table.get_celld()
+        for i in range(len(table_data) + 1):  # +1 for header row
+            # Method column (wider)
+            cellDict[(i, 0)].set_width(0.5)
+            # Median column
+            cellDict[(i, 1)].set_width(0.18)
+            # CI Lower column (narrower)
+            cellDict[(i, 2)].set_width(0.16)
+            # CI Upper column (narrower)
+            cellDict[(i, 3)].set_width(0.16)
+
+        # Apply systematic color coding to entropy values (0-1 range)
+        def get_color_for_entropy(value_str):
+            """Convert entropy string to color - blue (0) to red (1)"""
+            try:
+                # Extract numeric value from string
+                value = float(value_str)
+                # Clamp value between 0 and 1
+                value = max(0, min(1, value))
+                # Create color gradient: blue (0) to red (1)
+                # Blue component decreases as value increases
+                blue = (1 - value)
+                # Red component increases as value increases
+                red = value
+                # Keep green low for better contrast
+                green = 0.1
+                return (red, green, blue)
+            except:
+                return (0, 0, 0)  # Black for invalid values
+
+        # Apply colors to data rows (skip header row and provider rows)
+        row_idx = 1
+        for provider in providers:
+            provider_data_subset = dataset_data[dataset_data['Provider'] == provider]
+            if len(provider_data_subset) == 0:
+                continue
+
+            # Skip provider header row
+            row_idx += 1
+
+            # Color the method rows for this provider
+            for _, row in provider_data_subset.iterrows():
+                # Color median value (column 1)
+                median_color = get_color_for_entropy(row['Median'])
+                cellDict[(row_idx, 1)].set_text_props(color=median_color)
+
+                # Color CI Lower value (column 2)
+                ci_lower_color = get_color_for_entropy(row['CI_Lower'])
+                cellDict[(row_idx, 2)].set_text_props(color=ci_lower_color)
+
+                # Color CI Upper value (column 3)
+                ci_upper_color = get_color_for_entropy(row['CI_Upper'])
+                cellDict[(row_idx, 3)].set_text_props(color=ci_upper_color)
+
                 row_idx += 1
-                
-                # Color the method rows for this provider
-                for _, row in provider_data_subset.iterrows():
-                    # Color median value (column 1)
-                    median_color = get_color_for_entropy(row['Median'])
-                    cellDict[(row_idx, 1)].set_text_props(color=median_color)
-                    
-                    # Color CI Lower value (column 2)
-                    ci_lower_color = get_color_for_entropy(row['CI_Lower'])
-                    cellDict[(row_idx, 2)].set_text_props(color=ci_lower_color)
-                    
-                    # Color CI Upper value (column 3)
-                    ci_upper_color = get_color_for_entropy(row['CI_Upper'])
-                    cellDict[(row_idx, 3)].set_text_props(color=ci_upper_color)
-                    
-                    row_idx += 1
-            
-            # Style header row
+
+        # Style header row
+        for i in range(4):
+            table[(0, i)].set_facecolor('#E6E6E6')
+            table[(0, i)].set_text_props(weight='bold')
+
+        # Style provider rows (bold, different background)
+        row_idx = 1
+        for provider in providers:
+            provider_data = dataset_data[dataset_data['Provider'] == provider]
+            if len(provider_data) == 0:
+                continue
+
+            # Provider header row
             for i in range(4):
-                table[(0, i)].set_facecolor('#E6E6E6')
-                table[(0, i)].set_text_props(weight='bold')
-            
-            # Style provider rows (bold, different background)
-            row_idx = 1
+                table[(row_idx, i)].set_facecolor('#D0D0D0')
+                table[(row_idx, i)].set_text_props(weight='bold')
+
+            row_idx += 1 + len(provider_data)  # Skip provider methods
+
+    for dataset_key in sorted_dataset_names:
+        display_name = dataset_name_mapping.get(dataset_key, dataset_key.replace('_', ' ').title())
+        dataset_name = dataset_key.replace('_', ' ').title()
+        dataset_data = ci_df[ci_df['Dataset'] == dataset_name]
+
+        if len(dataset_data) == 0:
+            print(f"No entropy data for {dataset_name}, skipping")
+            continue
+
+        # Row counts per side, to size the figure so both halves fit comfortably
+        def n_rows_for(providers):
+            n = 0
             for provider in providers:
                 provider_data = dataset_data[dataset_data['Provider'] == provider]
                 if len(provider_data) == 0:
                     continue
-                
-                # Provider header row
-                for i in range(4):
-                    table[(row_idx, i)].set_facecolor('#D0D0D0')
-                    table[(row_idx, i)].set_text_props(weight='bold')
-                
-                row_idx += 1 + len(provider_data)  # Skip provider methods
-            
-            # Add dataset title using clean display name
-            ax.text(0.5, 1.02, display_name, ha='center', va='bottom', 
-                   fontsize=14, fontweight='bold', transform=ax.transAxes)
-    
-    # Hide any unused subplots
-    for idx in range(len(sorted_dataset_names), 6):
-        axes_flat[idx].set_visible(False)
-    
-    # plt.suptitle('Bootstrap Confidence Intervals for Cumulative Entropy by Method\n(95% CI, 1000 bootstrap samples)', 
-    #              fontsize=16, y=0.95)
-    plt.tight_layout()
-    # plt.subplots_adjust(top=0.88)
-    
-    # Save figure
-    os.makedirs('./pngs', exist_ok=True)
-    plt.savefig('./pngs/figure_S8.png', dpi=300, bbox_inches='tight')
-    print("Saved entropy bootstrap CI figure to ./pngs/figure_S8.png")
-    
-    return fig
+                n += 1 + len(provider_data)  # provider header row + methods
+            return n
+
+        max_rows = max(n_rows_for(left_providers), n_rows_for(right_providers))
+        if max_rows == 0:
+            continue
+        n_rows = max_rows + 1  # +1 for header row
+
+        # One standalone figure per dataset, providers split 2-and-2 side by side
+        fig, (ax_left, ax_right) = plt.subplots(1, 2, figsize=(28, max(3.5, n_rows * 0.9)))
+
+        render_provider_table(ax_left, dataset_data, left_providers)
+        render_provider_table(ax_right, dataset_data, right_providers)
+
+        # Add dataset title centered above both halves
+        fig.suptitle(display_name, fontsize=63, fontweight='bold', y=1.05)
+
+        plt.tight_layout()
+
+        safe_dataset_name = dataset_key.replace('_', '-')
+        filepath = f'./pngs/figure_S8_{safe_dataset_name}.png'
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"Saved entropy bootstrap CI figure to {filepath}")
+        figs.append(fig)
+
+    return figs
 
 def create_entropy_statistical_matrices(entropy_data):
     """Create statistical comparison matrices for LLM vs BO methods using entropy data"""
@@ -947,9 +953,9 @@ def main():
     print("="*60)
     
     # Use the raw entropy data for bootstrap analysis
-    bootstrap_fig = create_entropy_bootstrap_ci_figure(entropy_data)
+    bootstrap_figs = create_entropy_bootstrap_ci_figure(entropy_data)
 
-    print(f'Figure S8 saved to ./pngs/figure_S8.png')
+    print(f'Figure S8 saved as {len(bootstrap_figs)} individual dataset figures to ./pngs/figure_S8_<dataset>.png')
     
     # # Create statistical significance matrices
     # print("\n" + "="*60)
